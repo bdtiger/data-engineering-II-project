@@ -76,5 +76,7 @@ htmlcov/
 tweets/
 *.bbl
 *.blg
+*.bcf
+*.run.xml
 %OUTDIR%
 .idea
