@@ -2,3 +2,16 @@
 % Answer to Q1:
 % What is the meaning and importance of contextualization and orchestration,
 % and what are currently available tools and services in this area?
+
+\subsection*{Role and Importance}
+Contextualization is the automated process of setting up a new virtual machine or container so it can start working correctly \cite{armstrong2015}. When cloud systems scale up, they create new copies from a standard template. Contextualization injects specific details like IP addresses and security keys into these copies so they have their own identity \cite{armstrong2015}. 
+
+Orchestration is the broader management of these parts. It coordinates how different services work together across many computers and locations \cite{qian2020}. It is important because it automates complex tasks like deploying software and managing resources, which reduces human error and keeps the system running smoothly \cite{armstrong2015, qian2020}.
+
+\subsection*{Four Frameworks and Tools}
+\begin{enumerate}
+    \item \textbf{Kubernetes (Orchestration):} This tool manages containerized applications. It automatically handles scaling and ensures that if one part fails, another starts immediately to keep the service online \cite{hariri2018}.
+    \item \textbf{Puppet and Chef (Configuration Management):} These tools automate the setup and maintenance of software on many virtual machines at once. They make sure every machine follows the same rules and stays updated \cite{armstrong2015}.
+    \item \textbf{VM Contextualizer (Contextualization):} This is a specific tool that prepares virtual machine images by injecting custom data during boot time. It helps keep the main image simple while allowing each copy to be unique \cite{armstrong2015}.
+    \item \textbf{TOSCA (Orchestration):} This is a standard way to describe how a cloud application should be built. It tells orchestration tools exactly what hardware and connections are needed to run a complex application \cite{qian2020}.
+\end{enumerate}
