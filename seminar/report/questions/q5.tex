@@ -1,6 +1,15 @@
 \section{Distributed vs.\ Federated Machine Learning}
-% Answer to Q5:
-% What is the difference between distributed and Federated machine learning?
-% Highlight the architectural differences between the two machine learning
-% environments. Which one of them is more suitable for privacy preserving
-% model training process and why?
+ 
+Distributed Machine Learning (DML) and Federated Learning (FL) are two fundamentally different approaches to training machine learning models across multiple computers \citep{Verbraeken2020}. DML centralizes data in one location, then splits the training work across multiple computers. Data can be moved between computers if needed, and the main goal is to speed up training on huge datasets by processing them in parallel \citep{Verbraeken2020}. In contrast, Federated Learning keeps data spread across different devices and it never moves to a central server \citep{Yang2021}. Instead, each device trains the model locally on its own data, then sends only the updated model weights back to the server. The server then combines all the updates and sends the improved global model back to the devices.
+ 
+\section{Architectural Differences}
+ 
+In DML, data flows freely between computers and the central server controls and manages everything directly \citep{Verbraeken2020}. The system is designed to maximize processing speed and computational power. In FL, data stays permanently on local devices and never travels anywhere \citep{Yang2021}. Instead of data moving, only small model updates are exchanged. The server's role changes from being a controlling authority to simply coordinating and combining updates from all participants \citep{Qian2020}. This fundamental difference in architecture creates very different privacy profiles for the two systems.
+ 
+\section{Privacy Considerations}
+ 
+When considering privacy-preserving model training, Federated Learning is clearly the superior choice \citep{Yang2021}. The most important reason is that raw personal data never leaves the user's device. In DML, data moves around between computers and can be exposed if central servers get hacked \citep{Verbraeken2020}. In FL, hackers would need to break into many individual devices to steal data, rather than just compromising one central server. Additionally, privacy laws like GDPR require data to stay under user control and not be centralized \citep{Yang2021}. FL naturally follows these rules because data never leaves home. 
+ 
+For example, a hospital using FL can train a disease detection model with other hospitals without ever sharing patient records \citep{Qian2020}. With DML, all sensitive patient data would need to go to one central server, creating an enormous privacy risk. Both systems can add extra security measures like encryption, but FL is privacy-first by design, not just as an add-on feature \citep{Yang2021}.
+ 
+
