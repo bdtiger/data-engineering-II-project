@@ -3,6 +3,7 @@ Highlight the architectural differences between the two machine learning
 environments. Which one of them is more suitable for privacy preserving model 
 training process and why?}
  
+ 
 Distributed Machine Learning (DML) and Federated Learning (FL) are two fundamentally different approaches to training machine learning models across multiple computers \cite{Verbraeken2020}. DML centralizes data in one location, then splits the training work across multiple computers. Data can be moved between computers if needed, and the main goal is to speed up training on huge datasets by processing them in parallel \cite{Verbraeken2020}. In contrast, Federated Learning keeps data spread across different devices and it never moves to a central server \cite{Yang2021}. Instead, each device trains the model locally on its own data, then sends only the updated model weights back to the server. The server then combines all the updates and sends the improved global model back to the devices.
  
 \subsection{Architectural Differences}
@@ -15,4 +16,3 @@ When considering privacy-preserving model training, Federated Learning is clearl
  
 For example, a hospital using FL can train a disease detection model with other hospitals without ever sharing patient records \cite{Qian2020}. With DML, all sensitive patient data would need to go to one central server, creating an enormous privacy risk. Both systems can add extra security measures like encryption, but FL is privacy-first by design, not just as an add-on feature \cite{Yang2021}.
  
-
