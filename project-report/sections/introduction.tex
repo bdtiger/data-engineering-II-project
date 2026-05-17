@@ -1,0 +1,26 @@
+\section{Introduction}
+
+In the landscape of open-source software development, the number of GitHub stargazers has emerged
+as a widely adopted proxy for project popularity and community engagement. Much like subscriber
+counts on video platforms, stars reflect the perceived value of a repository and influence its
+visibility, adoption, and long-term sustainability~\cite{borges2016}.
+
+Predicting the star count of a repository from its activity metrics has practical value for
+developers seeking to benchmark their projects, for investors evaluating open-source ecosystems,
+and for researchers studying the social dynamics of software communities. However, the relationship
+between repository attributes---such as fork counts, issue activity, and repository age---and star
+accumulation is non-linear and multi-dimensional, making accurate prediction a non-trivial task.
+
+In this project, we study which machine learning regression model achieves the highest prediction
+accuracy for GitHub star counts. We collect a dataset of 1{,}000 open-source repositories with at
+least 50 stars via the GitHub REST API, extract 14 activity-based features, and train five
+regression models: Linear Regression, Ridge Regression, Random Forest, Gradient Boosting, and
+Support Vector Regression (SVR). Models are evaluated using the coefficient of determination
+($R^2$), and the best-performing model is deployed to a production server via an automated
+Git~Hook pipeline.
+
+The system is built on two Ubuntu virtual machines (VMs) provisioned on the SNIC Science Cloud
+using OpenStack. Ansible orchestrates the configuration of both VMs, and Docker containers
+encapsulate the application stack on the production server. This report describes the data
+collection pipeline, the prediction system architecture, the comparative model results, and a
+scalability analysis of the serving infrastructure.

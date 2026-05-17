@@ -1,0 +1,22 @@
+\section{Conclusion}
+
+This project investigated the accuracy of machine learning regression models in predicting the
+number of GitHub stargazers for open-source repositories. We collected a dataset of 1{,}000
+repositories via the GitHub REST API, extracted 14 activity-based features, and trained five
+regression models under a consistent evaluation protocol using the $R^2$ metric.
+
+Our results show that \textbf{[BEST MODEL NAME]} achieves the highest predictive accuracy
+($R^2 = \text{XX.XX}$), outperforming both linear baselines and the other ensemble methods
+considered. The result confirms that non-linear models are better suited to capturing the
+complex relationships between repository activity signals and community popularity.
+
+The prediction system was deployed to a production environment using a fully automated pipeline.
+OpenStack provisioned the virtual machines, Ansible configured the infrastructure, and a Git
+Hook eliminated the need for any manual deployment steps. The production Flask application,
+backed by Celery and Redis, demonstrated horizontal scalability: throughput increased by
+approximately \textbf{XX\%} when the number of Celery workers was scaled from one to four.
+
+Future work could explore richer feature sets---such as commit frequency, contributor diversity,
+and documentation quality---as well as time-series models that capture the temporal dynamics of
+star accumulation. Extending the dataset beyond 1{,}000 repositories and incorporating
+cross-platform signals (e.g.\ social media mentions) could further improve prediction accuracy.

@@ -1,0 +1,164 @@
+- hosts: all
+
+  tasks:
+
+   - name: Generate hosts file
+     lineinfile: dest=/etc/hosts
+                 regexp='.*{{ item }}$'
+                 line="{{ hostvars[item].ansible_default_ipv4.address }} {{item}}"
+                 state=present
+     when: hostvars[item].ansible_default_ipv4.address is defined
+     with_items: "{{groups['all']}}"
+     become: true
+
+   - name: apt update
+     apt: update_cache=yes upgrade=dist
+     become: true
+
+   - name: Install common packages
+     apt:
+      pkg:
+       - git
+       - python3-pip
+       - python3-venv
+      state: latest
+      update_cache: true
+     become: true
+
+   - name: Clone project repo
+     become: true
+     git:
+      repo: 'https://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@github.com/bdtiger/data-engineering-II-project.git'
+      dest: /data-engineering-II-project
+      force: yes
+
+   - name: Set ownership of project directory
+     become: true
+     file:
+      path: /data-engineering-II-project
+      state: directory
+      recurse: yes
+      owner: appuser
+      group: appuser
+
+
+# ── Dev server ────────────────────────────────────────────────────────────────
+# Runs the GitHub crawler and model training directly (no Docker needed).
+# Packages: requests + pandas for the crawler, scikit-learn + joblib + numpy
+# for training. Also sets up the bare git repo and SSH key for the CI/CD hook.
+
+- hosts: devserver
+
+  tasks:
+   - name: Install crawler and training packages
+     become: true
+     pip:
+      name:
+       - requests
+       - pandas
+       - scikit-learn
+       - joblib
+       - numpy
+      executable: pip3
+
+   - name: Create bare git repo for CI/CD hook
+     become: true
+     shell: |
+      git init --bare /opt/model_repo.git
+      chown -R appuser:appuser /opt/model_repo.git
+     args:
+      creates: /opt/model_repo.git/HEAD
+
+   - name: Generate SSH keypair on dev (used to SCP model to prod)
+     become: true
+     become_user: appuser
+     shell: ssh-keygen -t rsa -b 4096 -N "" -f /home/appuser/.ssh/id_rsa
+     args:
+      creates: /home/appuser/.ssh/id_rsa
+
+   - name: Add deployment git remote pointing at bare repo
+     become: true
+     become_user: appuser
+     shell: |
+      cd /data-engineering-II-project
+      git remote get-url deployment 2>/dev/null || \
+      git remote add deployment /opt/model_repo.git
+     ignore_errors: true
+
+
+# ── Prod server ───────────────────────────────────────────────────────────────
+# Runs the ci_cd/production_server docker-compose stack from the repo.
+# Stack: RabbitMQ 3.12 + Celery worker (workerA.py).
+# best_model.pkl is SCP'd here by the Git hook and loaded by the worker.
+
+- hosts: prodserver
+
+  tasks:
+   - name: Install packages required before adding Docker repo
+     apt:
+      pkg:
+       - apt-transport-https
+       - ca-certificates
+       - curl
+       - software-properties-common
+      state: latest
+      update_cache: true
+     become: true
+
+   - name: Create Docker config directory
+     become: true
+     file:
+      path: /etc/docker
+      state: directory
+
+   # MTU fix: SNIC network MTU is 1450, Docker default is 1500.
+   # Without this, pip installs inside containers silently hang or fail.
+   - name: Set Docker MTU to match SNIC (1450)
+     become: true
+     copy:
+      dest: /etc/docker/daemon.json
+      content: |
+       {
+         "mtu": 1450
+       }
+
+   - name: Add Docker GPG key
+     apt_key:
+      url: https://download.docker.com/linux/ubuntu/gpg
+      state: present
+     become: true
+
+   # Ubuntu 22.04 = jammy  (the original used focal = 20.04, which was wrong)
+   - name: Add Docker apt repository for Ubuntu 22.04 (jammy)
+     apt_repository:
+      repo: "deb [arch=amd64] https://download.docker.com/linux/ubuntu jammy stable"
+      state: present
+     become: true
+
+   - name: Install Docker CE
+     apt:
+      pkg: docker-ce
+      state: present
+      update_cache: true
+     become: true
+
+   - name: Add appuser to docker group
+     user:
+      name: appuser
+      groups: docker
+      append: yes
+     become: true
+
+   - name: Create models directory on prod
+     become: true
+     file:
+      path: /data-engineering-II-project/ci_cd/production_server/models
+      state: directory
+      owner: appuser
+      group: appuser
+
+   - name: Start production containers
+     become: true
+     shell: docker compose up -d
+     args:
+      chdir: /data-engineering-II-project/ci_cd/production_server
