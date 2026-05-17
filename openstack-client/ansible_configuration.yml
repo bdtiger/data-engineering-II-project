@@ -88,7 +88,7 @@
 
 # ── Prod server ───────────────────────────────────────────────────────────────
 # Runs the ci_cd/production_server docker-compose stack from the repo.
-# Stack: RabbitMQ 3.12 + Celery worker (workerA.py).
+# Stack: RabbitMQ 3.12 + Celery worker (ci_cd/production_server/workerA.py).
 # best_model.pkl is SCP'd here by the Git hook and loaded by the worker.
 
 - hosts: prodserver
@@ -128,7 +128,6 @@
       state: present
      become: true
 
-   # Ubuntu 22.04 = jammy  (the original used focal = 20.04, which was wrong)
    - name: Add Docker apt repository for Ubuntu 22.04 (jammy)
      apt_repository:
       repo: "deb [arch=amd64] https://download.docker.com/linux/ubuntu jammy stable"
@@ -148,14 +147,6 @@
       groups: docker
       append: yes
      become: true
-
-   - name: Create models directory on prod
-     become: true
-     file:
-      path: /data-engineering-II-project/ci_cd/production_server/models
-      state: directory
-      owner: appuser
-      group: appuser
 
    - name: Start production containers
      become: true
