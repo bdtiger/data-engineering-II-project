@@ -135,7 +135,7 @@ cd data-engineering-II-project/openstack-client/
 ansible-inventory -i inventory.ini --list
 
 # Run the full playbook
-ansible-playbook -i inventory.ini ansible_configuration.yml
+ansible-playbook -i inventory.ini ansible_configuration.yml --private-key=/home/ubuntu/cluster-keys/cluster-key
 ```
 
 After this completes:
