@@ -4,3 +4,4 @@ celery
 scikit-learn
 numpy<2.0
 future
+tensorflow
