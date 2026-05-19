@@ -23,6 +23,5 @@ jobs:
         sudo apt-get update -y
         sudo apt-get install -y docker-ce
         
-        git clone https://github.com/sztoor/model_serving.git /tmp/model_serving
-        sudo timeout --preserve-status 100 docker compose -f /tmp/model_serving/single_server_with_docker/production_server/docker-compose.yml up -d
+        sudo timeout --preserve-status 100 docker compose -f ci_cd/production_server/docker-compose.yml up -d
 

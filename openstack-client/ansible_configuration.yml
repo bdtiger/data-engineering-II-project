@@ -61,28 +61,36 @@
        - numpy
       executable: pip3
 
-   - name: Create bare git repo for CI/CD hook
+   - name: Create working git staging repo on dev
      become: true
+     become_user: appuser
      shell: |
-      git init --bare /opt/model_repo.git
-      chown -R appuser:appuser /opt/model_repo.git
+      mkdir -p /home/appuser/my_project
+      cd /home/appuser/my_project
+      git init
      args:
-      creates: /opt/model_repo.git/HEAD
+      creates: /home/appuser/my_project/.git/HEAD
 
-   - name: Generate SSH keypair on dev (used to SCP model to prod)
+   - name: Generate SSH keypair on dev (used to push model to prod)
      become: true
      become_user: appuser
      shell: ssh-keygen -t rsa -b 4096 -N "" -f /home/appuser/.ssh/id_rsa
      args:
       creates: /home/appuser/.ssh/id_rsa
 
-   - name: Add deployment git remote pointing at bare repo
+   - name: Read dev public key
+     become: true
+     slurp:
+      src: /home/appuser/.ssh/id_rsa.pub
+     register: dev_pubkey
+
+   - name: Add production remote pointing at prod bare repo
      become: true
      become_user: appuser
      shell: |
-      cd /data-engineering-II-project
-      git remote get-url deployment 2>/dev/null || \
-      git remote add deployment /opt/model_repo.git
+      cd /home/appuser/my_project
+      git remote get-url production 2>/dev/null || \
+      git remote add production appuser@{{ hostvars['prodserver']['ansible_host'] }}:/home/appuser/my_project
      ignore_errors: true
 
 
@@ -147,6 +155,50 @@
       groups: docker
       append: yes
      become: true
+
+   - name: Authorize dev public key on prod
+     become: true
+     become_user: appuser
+     authorized_key:
+      user: appuser
+      state: present
+      key: "{{ hostvars['devserver']['dev_pubkey']['content'] | b64decode }}"
+
+   - name: Create bare git repo for CI/CD hook on prod
+     become: true
+     become_user: appuser
+     shell: |
+      mkdir -p /home/appuser/my_project
+      cd /home/appuser/my_project
+      git init --bare
+     args:
+      creates: /home/appuser/my_project/HEAD
+
+   - name: Create post-receive git hook on prod
+     become: true
+     become_user: appuser
+     copy:
+      dest: /home/appuser/my_project/hooks/post-receive
+      content: |
+       #!/bin/bash
+       while read oldrev newrev ref
+       do
+         if [[ $ref =~ .*/master$ ]];
+         then
+           echo "Master ref received. Deploying master branch to production..."
+           git --work-tree=/data-engineering-II-project/ci_cd/production_server \
+               --git-dir=/home/appuser/my_project checkout -f
+         else
+           echo "Ref $ref successfully received. Doing nothing: only the master branch may be deployed on this server."
+         fi
+       done
+
+   - name: Make post-receive hook executable
+     become: true
+     become_user: appuser
+     file:
+      path: /home/appuser/my_project/hooks/post-receive
+      mode: '0755'
 
    - name: Start production containers
      become: true
