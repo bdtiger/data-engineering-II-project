@@ -100,6 +100,18 @@ KEY_NAME    = "de1-course-snic-key"
 ```
 
 ### 1.2 Provision Dev and Prod VMs
+```bash
+ssh-keygen -t rsa
+# enter the key name /home/ubuntu/cluster-keys/cluster-key
+```
+
+open prod-cloud-cfg.txt delete the old key from the section `ssh_authorized_keys:` and
+copy the complete contents of `/home/ubuntu/cluster-keys/cluster-key.pub` in the
+`prod-cloud-cfg.txt` file.
+
+Open the `dev-cloud-cfg.txt`. Delete the old key from the section
+`ssh_authorized_keys:` and copy the complete contents of
+`/home/ubuntu/cluster-keys/cluster-key.pub` in the `dev-cloud-cfg.txt` file.
 
 ```bash
 cd data-engineering-II-project/openstack-client/

@@ -11,8 +11,8 @@ sudo apt install python3-openstackclient
 sudo apt install python3-novaclient
 sudo apt install python3-keystoneclient
 
-pip3 install "ray[tune]" scikit-learn numpy pandas  requests
-
+pip3 install scikit-learn numpy pandas  requests
+mkdir -p /home/ubuntu/cluster-keys
 
 
 git clone https://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@github.com/bdtiger/data-engineering-II-project.git
