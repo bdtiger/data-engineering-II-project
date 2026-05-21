@@ -2,9 +2,7 @@
 
 \subsection{Model Comparison}
 
-Table~\ref{tab:model-results} summarises the $R^2$ scores achieved by each regression model on
-the held-out test set. All models operate on log-transformed star counts; the reported $R^2$
-values are computed in this transformed space.
+Table~\ref{tab:model-results} summarizes $R^2$ scores for each regression model on the held-out test set (log-transformed stars).
 
 \begin{table}[h]
   \centering
@@ -19,54 +17,13 @@ values are computed in this transformed space.
     SVR (RBF)          & XX.XX & X \\
     \bottomrule
   \end{tabular}
-  \caption{$R^2$ scores of all five regression models on the test set.
-           Higher is better; maximum value is 1.0.}
+  \caption{$R^2$ scores for all regression models (higher is better).}
   \label{tab:model-results}
 \end{table}
 
-% ── Replace XX.XX values with your actual results after running train_models.py
-% ── Then update the paragraph below accordingly
+The \textbf{[BEST MODEL NAME]} achieved the highest $R^2$ of \textbf{XX.XX}, explaining \textbf{XX\%} of variance in log-transformed star counts. This aligns with literature showing ensemble methods outperform linear models on non-linear tasks~\cite{hudson2022}. Linear and Ridge Regression, while competitive baselines, cannot capture interactions between correlated predictors like forks and watchers. SVR is sensitive to kernel parameters and scales poorly relative to tree-based ensembles.
 
-The \textbf{[BEST MODEL NAME]} achieved the highest $R^2$ of \textbf{XX.XX}, indicating that it
-explains approximately \textbf{XX\%} of the variance in log-transformed star counts on unseen
-data. This result is consistent with the broader literature, which reports that ensemble methods
-tend to outperform linear baselines on high-dimensional, non-linear regression tasks~\cite{hudson2022}.
-
-Linear and Ridge Regression provide competitive baselines given the relatively low number of
-features, but are limited by their inability to capture interaction effects between correlated
-predictors such as \texttt{forks} and \texttt{watchers}. SVR performs competitively for
-moderately sized datasets but is sensitive to the choice of kernel parameters and does not
-scale as efficiently as tree-based ensembles.
-
-The best model (\texttt{best\_model.pkl}) was automatically deployed to the production server
-via the Git Hook pipeline described in Section~3. The production endpoint was used to rank five
-representative GitHub repositories by their predicted star count, as shown in
-Table~\ref{tab:ranking}.
-
-\begin{table}[h]
-  \centering
-  \begin{tabular}{clc}
-    \toprule
-    \textbf{Rank} & \textbf{Repository} & \textbf{Predicted Stars} \\
-    \midrule
-    1 & \texttt{XXXXXXX/XXXXXXX} & XXXXXX \\
-    2 & \texttt{XXXXXXX/XXXXXXX} & XXXXXX \\
-    3 & \texttt{XXXXXXX/XXXXXXX} & XXXXXX \\
-    4 & \texttt{XXXXXXX/XXXXXXX} & XXXXXX \\
-    5 & \texttt{XXXXXXX/XXXXXXX} & XXXXXX \\
-    \bottomrule
-  \end{tabular}
-  \caption{Ranking of five GitHub repositories by predicted star count
-           from the production prediction endpoint.}
-  \label{tab:ranking}
-\end{table}
-
-\subsection{Scalability Analysis}
-
-To evaluate the scalability of the production serving infrastructure, we subjected the Prod VM
-to load tests using Apache Bench (\texttt{ab}) with increasing numbers of concurrent Celery
-workers. Each test issued 200 HTTP POST requests to the \texttt{/predict} endpoint with a
-concurrency level of 20.
+The best model was deployed to production via the Git Hook pipeline. Production predictions ranked five representative repositories by predicted star count. Scalability analysis tested the serving infrastructure under load (200 HTTP requests, concurrency=20) across varying Celery worker counts.
 
 \begin{table}[h]
   \centering
@@ -79,15 +36,8 @@ concurrency level of 20.
     4 & XX.XX & XXXX & XXXX \\
     \bottomrule
   \end{tabular}
-  \caption{Throughput and latency under load for varying numbers of Celery workers.}
+  \caption{Throughput and latency under load for varying Celery worker counts.}
   \label{tab:scalability}
 \end{table}
 
-% ── Replace XX.XX values with your actual ab output after running Phase 8
-
-Increasing the number of Celery workers from 1 to 4 resulted in a \textbf{XX\%} improvement in
-throughput and a corresponding reduction in mean latency. This demonstrates that the
-asynchronous task queue architecture scales horizontally with additional worker processes,
-as prediction tasks are independent and can be executed in parallel without shared state.
-The Redis broker introduces negligible overhead, remaining well below saturation across all
-tested configurations.
+Scaling Celery workers from 1 to 4 achieved \textbf{XX\%} throughput improvement and reduced latency, demonstrating horizontal scalability of the asynchronous architecture. Tasks execute independently in parallel with negligible Redis broker overhead.

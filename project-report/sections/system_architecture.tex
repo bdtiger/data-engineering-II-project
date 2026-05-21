@@ -1,40 +1,10 @@
 \section{System Architecture}
 
-The system consists of two interconnected pipelines: a \textbf{data collection pipeline} that
-crawls the GitHub API and produces a training dataset, and a \textbf{prediction pipeline} that
-trains, evaluates, and deploys machine learning models. Both pipelines run on infrastructure
-provisioned via OpenStack on the SNIC Science Cloud and configured with Ansible.
+The system comprises two interconnected pipelines: (1)~data collection via GitHub API and (2)~model training and production deployment. Infrastructure consists of a Client VM (Ansible controller), a Dev VM (training), and a Prod VM (serving). All components run in Docker containers orchestrated with Docker Compose.
 
-\subsection{Infrastructure and Orchestration}
+\subsection{Data Collection and Feature Engineering}
 
-Two virtual machines are used throughout the project. A \textbf{Client VM} acts as the Ansible
-controller and OpenStack operator: it provisions the Dev and Prod VMs using a Python script
-(\texttt{start\_instances.py}) that calls the OpenStack API, and subsequently configures them
-using Ansible playbooks. All application components run inside Docker containers orchestrated
-with Docker Compose.
-
-The \textbf{Dev VM} hosts the data collection scripts and the model training pipeline. The
-\textbf{Prod VM} hosts the live prediction service, consisting of a Flask web application, a
-Celery task queue, and a Redis message broker. A bare Git repository on the Dev VM, equipped
-with a \texttt{post-receive} Git Hook, automates model deployment: a single \texttt{git push}
-from the Dev VM copies the best model artifact to the Prod VM and restarts the production
-containers.
-
-\subsection{Data Collection Pipeline}
-
-\begin{figure}[h]
-  \centering
-  \includegraphics[width=0.82\linewidth]{figures/diagram1_data_collection_pipeline.jpg}
-  \caption{Data collection pipeline running on the Dev VM.}
-  \label{fig:data-pipeline}
-\end{figure}
-
-The crawler (\texttt{collect\_github.py}) queries the GitHub Search API for repositories with at
-least 50 stars, sorted by star count in descending order, using pagination to collect 1{,}000
-repositories in total. A two-second delay between requests ensures compliance with the GitHub
-API rate limits. For each repository, 14 features are extracted directly from the API response,
-as listed in Table~\ref{tab:features}. Star counts are log-transformed ($\log(1 + \text{stars})$)
-before training to stabilise variance across the wide range of values observed in the dataset.
+The data collection script queries the GitHub Search API for repositories with $\geq 50$ stars, collecting 1{,}000 repositories sorted by star count. A two-second delay between requests ensures API rate-limit compliance. For each repository, 14 features are extracted (Table~\ref{tab:features}). Star counts are log-transformed ($\log(1 + \text{stars})$) to stabilize variance across the wide distribution in the dataset.
 
 \begin{table}[h]
   \centering
@@ -43,58 +13,31 @@ before training to stabilise variance across the wide range of values observed i
     \toprule
     \textbf{Feature} & \textbf{Description} \\
     \midrule
-    \texttt{forks}             & Number of repository forks \\
-    \texttt{watchers}          & Number of watchers \\
-    \texttt{open\_issues}      & Count of open issues \\
-    \texttt{size\_kb}          & Repository size in kilobytes \\
-    \texttt{has\_wiki}         & Binary: wiki enabled \\
-    \texttt{has\_projects}     & Binary: projects enabled \\
-    \texttt{has\_downloads}    & Binary: downloads enabled \\
-    \texttt{is\_fork}          & Binary: is a fork \\
-    \texttt{age\_days}         & Days since repository creation \\
-    \texttt{days\_since\_push} & Days since last commit push \\
-    \texttt{topics\_count}     & Number of topics assigned \\
-    \texttt{network\_count}    & Size of the fork network \\
-    \texttt{subscribers\_count}& Number of subscribers \\
-    \texttt{language\_enc}     & Label-encoded primary language \\
+    \texttt{forks}, \texttt{watchers}, \texttt{open\_issues} & Activity metrics \\
+    \texttt{size\_kb}, \texttt{age\_days}, \texttt{days\_since\_push} & Repository properties \\
+    \texttt{has\_wiki}, \texttt{has\_projects}, \texttt{has\_downloads} & Binary features \\
+    \texttt{is\_fork}, \texttt{topics\_count}, \texttt{network\_count} & Repository type \& metadata \\
+    \texttt{subscribers\_count}, \texttt{language\_enc} & Community engagement \\
     \bottomrule
   \end{tabular}
-  \caption{Features extracted from the GitHub API for each repository.}
+  \caption{14 features extracted from the GitHub API.}
   \label{tab:features}
 \end{table}
 
-\subsection{Prediction Pipeline and CI/CD}
+\subsection{Model Training and Deployment}
 
-\begin{figure}[h]
-  \centering
-  \includegraphics[width=0.82\linewidth]{figures/diagram2_prediction_app_cicd.jpg}
-  \caption{Prediction pipeline and automated deployment via Git Hook.}
-  \label{fig:cicd-pipeline}
-\end{figure}
+Five regression models are trained on the Dev VM using an 80/20 train--test split: Linear Regression, Ridge Regression ($\alpha = 1.0$), Random Forest (200 estimators), Gradient Boosting (200 estimators), and SVR (RBF kernel). Each model is wrapped in a scikit-learn Pipeline with StandardScaler preprocessing. Models are evaluated on $R^2$ over the held-out test set.
 
-Five regression models are trained on the Dev VM using an 80/20 train--test split:
-Linear Regression, Ridge Regression ($\alpha = 1.0$), Random Forest (200 estimators),
-Gradient Boosting (200 estimators), and SVR (RBF kernel). Each model is wrapped in a
-scikit-learn \texttt{Pipeline} that applies \texttt{StandardScaler} before the estimator.
-All models are evaluated using $R^2$ on the held-out test set. The best-performing model
-is saved as \texttt{best\_model.pkl}.
+Deployment is automated via a Git Hook on the Dev VM: after training, \texttt{best\_model.pkl} is committed and pushed to a bare repository, triggering a \texttt{post-receive} hook that (1)~securely copies the model to Prod via SCP and (2)~restarts Docker containers. This eliminates manual deployment steps.
 
-Deployment is fully automated via a Git Hook. After training, the developer commits
-\texttt{best\_model.pkl} and pushes to a bare repository on the Dev VM. The
-\texttt{post-receive} hook securely copies the model file to the Prod VM via SCP and
-restarts the Docker containers. No manual steps are required on the production server.
+On Prod, the Flask application exposes a \texttt{/predict} endpoint accepting JSON feature vectors. Prediction tasks are dispatched asynchronously to Celery workers backed by Redis, allowing concurrent request handling without blocking.
 
-On the Prod VM, the Flask application exposes a \texttt{/predict} endpoint that accepts
-a JSON list of repository feature vectors. Prediction tasks are dispatched asynchronously
-to Celery workers backed by Redis, and results are polled via a \texttt{/result/<task\_id>}
-endpoint. This design allows the serving layer to handle concurrent requests without blocking.
-
-\subsection{Combined System Overview}
+\subsection{System Overview}
 
 \begin{figure}[h]
   \centering
   \includegraphics[width=0.95\linewidth]{figures/diagram3_combined_system_architecture.jpg}
-  \caption{Full system architecture across all virtual machines.}
+  \caption{Complete system architecture spanning all VMs: data collection on Dev, training and Git Hook CI/CD, and production serving on Prod with asynchronous Celery workers.}
   \label{fig:combined}
 \end{figure}
 
