@@ -1,0 +1,527 @@
+SyncTeX Version:1
+Input:1:d:/University/Data Engieering II/data-engineering-II-project/project-report/project-report.tex
+Input:2:C:/Program Files/MiKTeX/tex/latex/base/article.cls
+Input:3:C:/Program Files/MiKTeX/tex/latex/base/size11.clo
+Input:4:C:/Program Files/MiKTeX/tex/latex/base/fontenc.sty
+Input:5:C:/Program Files/MiKTeX/tex/latex/lm/t1lmr.fd
+Input:6:C:/Program Files/MiKTeX/tex/latex/base/inputenc.sty
+Input:7:C:/Users/Asus/AppData/Roaming/MiKTeX/tex/latex/psnfss/helvet.sty
+Input:8:C:/Program Files/MiKTeX/tex/latex/graphics/keyval.sty
+Input:9:C:/Users/Asus/AppData/Roaming/MiKTeX/tex/latex/geometry/geometry.sty
+Input:10:C:/Program Files/MiKTeX/tex/generic/iftex/ifvtex.sty
+Input:11:C:/Program Files/MiKTeX/tex/generic/iftex/iftex.sty
+Input:12:C:/Users/Asus/AppData/Roaming/MiKTeX/tex/latex/geometry/geometry.cfg
+Input:13:C:/Program Files/MiKTeX/tex/latex/hyperref/hyperref.sty
+Input:14:C:/Users/Asus/AppData/Roaming/MiKTeX/tex/latex/kvsetkeys/kvsetkeys.sty
+Input:15:C:/Users/Asus/AppData/Roaming/MiKTeX/tex/generic/kvdefinekeys/kvdefinekeys.sty
+Input:16:C:/Users/Asus/AppData/Roaming/MiKTeX/tex/generic/pdfescape/pdfescape.sty
+Input:17:C:/Users/Asus/AppData/Roaming/MiKTeX/tex/generic/ltxcmds/ltxcmds.sty
+Input:18:C:/Program Files/MiKTeX/tex/generic/pdftexcmds/pdftexcmds.sty
+Input:19:C:/Users/Asus/AppData/Roaming/MiKTeX/tex/generic/infwarerr/infwarerr.sty
+Input:20:C:/Users/Asus/AppData/Roaming/MiKTeX/tex/latex/hycolor/hycolor.sty
+Input:21:C:/Program Files/MiKTeX/tex/latex/hyperref/nameref.sty
+Input:22:C:/Users/Asus/AppData/Roaming/MiKTeX/tex/latex/refcount/refcount.sty
+Input:23:C:/Users/Asus/AppData/Roaming/MiKTeX/tex/generic/gettitlestring/gettitlestring.sty
+Input:24:C:/Users/Asus/AppData/Roaming/MiKTeX/tex/latex/kvoptions/kvoptions.sty
+Input:25:C:/Program Files/MiKTeX/tex/latex/etoolbox/etoolbox.sty
+Input:26:C:/Users/Asus/AppData/Roaming/MiKTeX/tex/generic/stringenc/stringenc.sty
+Input:27:C:/Program Files/MiKTeX/tex/latex/hyperref/pd1enc.def
+Input:28:C:/Users/Asus/AppData/Roaming/MiKTeX/tex/generic/intcalc/intcalc.sty
+Input:29:C:/Program Files/MiKTeX/tex/latex/hyperref/puenc.def
+Input:30:C:/Program Files/MiKTeX/tex/latex/url/url.sty
+Input:31:C:/Users/Asus/AppData/Roaming/MiKTeX/tex/generic/bitset/bitset.sty
+Input:32:C:/Users/Asus/AppData/Roaming/MiKTeX/tex/generic/bigintcalc/bigintcalc.sty
+Input:33:C:/Program Files/MiKTeX/tex/latex/hyperref/hdvips.def
+Input:34:C:/Program Files/MiKTeX/tex/latex/hyperref/pdfmark.def
+Input:35:C:/Users/Asus/AppData/Roaming/MiKTeX/tex/latex/rerunfilecheck/rerunfilecheck.sty
+Input:36:C:/Users/Asus/AppData/Roaming/MiKTeX/tex/generic/uniquecounter/uniquecounter.sty
+Input:37:C:/Users/Asus/AppData/Roaming/MiKTeX/tex/latex/listingsutf8/listingsutf8.sty
+Input:38:C:/Program Files/MiKTeX/tex/latex/listings/listings.sty
+Input:39:C:/Program Files/MiKTeX/tex/latex/listings/lstpatch.sty
+Input:40:C:/Program Files/MiKTeX/tex/latex/listings/lstmisc.sty
+Input:41:C:/Program Files/MiKTeX/tex/latex/listings/listings.cfg
+Input:42:C:/Program Files/MiKTeX/tex/latex/xcolor/xcolor.sty
+Input:43:C:/Program Files/MiKTeX/tex/latex/graphics-cfg/color.cfg
+Input:44:C:/Program Files/MiKTeX/tex/latex/graphics-def/dvips.def
+Input:45:C:/Program Files/MiKTeX/tex/latex/graphics/mathcolor.ltx
+Input:46:C:/Users/Asus/AppData/Roaming/MiKTeX/tex/latex/enumitem/enumitem.sty
+Input:47:C:/Users/Asus/AppData/Roaming/MiKTeX/tex/latex/titlesec/titlesec.sty
+Input:48:C:/Users/Asus/AppData/Roaming/MiKTeX/tex/latex/parskip/parskip.sty
+Input:49:C:/Users/Asus/AppData/Roaming/MiKTeX/tex/latex/booktabs/booktabs.sty
+Input:50:C:/Program Files/MiKTeX/tex/latex/graphics/graphicx.sty
+Input:51:C:/Program Files/MiKTeX/tex/latex/graphics/graphics.sty
+Input:52:C:/Program Files/MiKTeX/tex/latex/graphics/trig.sty
+Input:53:C:/Program Files/MiKTeX/tex/latex/graphics-cfg/graphics.cfg
+Input:54:C:/Program Files/MiKTeX/tex/latex/amsmath/amsmath.sty
+Input:55:C:/Program Files/MiKTeX/tex/latex/amsmath/amstext.sty
+Input:56:C:/Program Files/MiKTeX/tex/latex/amsmath/amsgen.sty
+Input:57:C:/Program Files/MiKTeX/tex/latex/amsmath/amsbsy.sty
+Input:58:C:/Program Files/MiKTeX/tex/latex/amsmath/amsopn.sty
+Input:59:C:/Users/Asus/AppData/Roaming/MiKTeX/tex/latex/fancyhdr/fancyhdr.sty
+Input:60:C:/Program Files/MiKTeX/tex/latex/pgf/frontendlayer/tikz.sty
+Input:61:C:/Program Files/MiKTeX/tex/latex/pgf/basiclayer/pgf.sty
+Input:62:C:/Program Files/MiKTeX/tex/latex/pgf/utilities/pgfrcs.sty
+Input:63:C:/Program Files/MiKTeX/tex/generic/pgf/utilities/pgfutil-common.tex
+Input:64:C:/Program Files/MiKTeX/tex/generic/pgf/utilities/pgfutil-latex.def
+Input:65:C:/Program Files/MiKTeX/tex/generic/pgf/utilities/pgfrcs.code.tex
+Input:66:C:/Program Files/MiKTeX/tex/generic/pgf/pgf.revision.tex
+Input:67:C:/Program Files/MiKTeX/tex/latex/pgf/basiclayer/pgfcore.sty
+Input:68:C:/Program Files/MiKTeX/tex/latex/pgf/systemlayer/pgfsys.sty
+Input:69:C:/Program Files/MiKTeX/tex/generic/pgf/systemlayer/pgfsys.code.tex
+Input:70:C:/Program Files/MiKTeX/tex/generic/pgf/utilities/pgfkeys.code.tex
+Input:71:C:/Program Files/MiKTeX/tex/generic/pgf/utilities/pgfkeyslibraryfiltered.code.tex
+Input:72:C:/Program Files/MiKTeX/tex/generic/pgf/systemlayer/pgf.cfg
+Input:73:C:/Program Files/MiKTeX/tex/generic/pgf/systemlayer/pgfsys-dvips.def
+Input:74:C:/Program Files/MiKTeX/tex/generic/pgf/systemlayer/pgfsys-common-postscript.def
+Input:75:C:/Program Files/MiKTeX/tex/generic/pgf/systemlayer/pgfsyssoftpath.code.tex
+Input:76:C:/Program Files/MiKTeX/tex/generic/pgf/systemlayer/pgfsysprotocol.code.tex
+Input:77:C:/Program Files/MiKTeX/tex/generic/pgf/basiclayer/pgfcore.code.tex
+Input:78:C:/Program Files/MiKTeX/tex/generic/pgf/math/pgfmath.code.tex
+Input:79:C:/Program Files/MiKTeX/tex/generic/pgf/math/pgfmathutil.code.tex
+Input:80:C:/Program Files/MiKTeX/tex/generic/pgf/math/pgfmathparser.code.tex
+Input:81:C:/Program Files/MiKTeX/tex/generic/pgf/math/pgfmathfunctions.code.tex
+Input:82:C:/Program Files/MiKTeX/tex/generic/pgf/math/pgfmathfunctions.basic.code.tex
+Input:83:C:/Program Files/MiKTeX/tex/generic/pgf/math/pgfmathfunctions.trigonometric.code.tex
+Input:84:C:/Program Files/MiKTeX/tex/generic/pgf/math/pgfmathfunctions.random.code.tex
+Input:85:C:/Program Files/MiKTeX/tex/generic/pgf/math/pgfmathfunctions.comparison.code.tex
+Input:86:C:/Program Files/MiKTeX/tex/generic/pgf/math/pgfmathfunctions.base.code.tex
+Input:87:C:/Program Files/MiKTeX/tex/generic/pgf/math/pgfmathfunctions.round.code.tex
+Input:88:C:/Program Files/MiKTeX/tex/generic/pgf/math/pgfmathfunctions.misc.code.tex
+Input:89:C:/Program Files/MiKTeX/tex/generic/pgf/math/pgfmathfunctions.integerarithmetics.code.tex
+Input:90:C:/Program Files/MiKTeX/tex/generic/pgf/math/pgfmathcalc.code.tex
+Input:91:C:/Program Files/MiKTeX/tex/generic/pgf/math/pgfmathfloat.code.tex
+Input:92:C:/Program Files/MiKTeX/tex/generic/pgf/math/pgfint.code.tex
+Input:93:C:/Program Files/MiKTeX/tex/generic/pgf/basiclayer/pgfcorepoints.code.tex
+Input:94:C:/Program Files/MiKTeX/tex/generic/pgf/basiclayer/pgfcorepathconstruct.code.tex
+Input:95:C:/Program Files/MiKTeX/tex/generic/pgf/basiclayer/pgfcorepathusage.code.tex
+Input:96:C:/Program Files/MiKTeX/tex/generic/pgf/basiclayer/pgfcorescopes.code.tex
+Input:97:C:/Program Files/MiKTeX/tex/generic/pgf/basiclayer/pgfcoregraphicstate.code.tex
+Input:98:C:/Program Files/MiKTeX/tex/generic/pgf/basiclayer/pgfcoretransformations.code.tex
+Input:99:C:/Program Files/MiKTeX/tex/generic/pgf/basiclayer/pgfcorequick.code.tex
+Input:100:C:/Program Files/MiKTeX/tex/generic/pgf/basiclayer/pgfcoreobjects.code.tex
+Input:101:C:/Program Files/MiKTeX/tex/generic/pgf/basiclayer/pgfcorepathprocessing.code.tex
+Input:102:C:/Program Files/MiKTeX/tex/generic/pgf/basiclayer/pgfcorearrows.code.tex
+Input:103:C:/Program Files/MiKTeX/tex/generic/pgf/basiclayer/pgfcoreshade.code.tex
+Input:104:C:/Program Files/MiKTeX/tex/generic/pgf/basiclayer/pgfcoreimage.code.tex
+Input:105:C:/Program Files/MiKTeX/tex/generic/pgf/basiclayer/pgfcoreexternal.code.tex
+Input:106:C:/Program Files/MiKTeX/tex/generic/pgf/basiclayer/pgfcorelayers.code.tex
+Input:107:C:/Program Files/MiKTeX/tex/generic/pgf/basiclayer/pgfcoretransparency.code.tex
+Input:108:C:/Program Files/MiKTeX/tex/generic/pgf/basiclayer/pgfcorepatterns.code.tex
+Input:109:C:/Program Files/MiKTeX/tex/generic/pgf/basiclayer/pgfcorerdf.code.tex
+Input:110:C:/Program Files/MiKTeX/tex/generic/pgf/modules/pgfmoduleshapes.code.tex
+Input:111:C:/Program Files/MiKTeX/tex/generic/pgf/modules/pgfmoduleplot.code.tex
+Input:112:C:/Program Files/MiKTeX/tex/latex/pgf/compatibility/pgfcomp-version-0-65.sty
+Input:113:C:/Program Files/MiKTeX/tex/latex/pgf/compatibility/pgfcomp-version-1-18.sty
+Input:114:C:/Program Files/MiKTeX/tex/latex/pgf/utilities/pgffor.sty
+Input:115:C:/Program Files/MiKTeX/tex/latex/pgf/utilities/pgfkeys.sty
+Input:116:C:/Program Files/MiKTeX/tex/generic/pgf/utilities/pgfkeys.code.tex
+Input:117:C:/Program Files/MiKTeX/tex/latex/pgf/math/pgfmath.sty
+Input:118:C:/Program Files/MiKTeX/tex/generic/pgf/math/pgfmath.code.tex
+Input:119:C:/Program Files/MiKTeX/tex/generic/pgf/utilities/pgffor.code.tex
+Input:120:C:/Program Files/MiKTeX/tex/generic/pgf/frontendlayer/tikz/tikz.code.tex
+Input:121:C:/Program Files/MiKTeX/tex/generic/pgf/libraries/pgflibraryplothandlers.code.tex
+Input:122:C:/Program Files/MiKTeX/tex/generic/pgf/modules/pgfmodulematrix.code.tex
+Input:123:C:/Program Files/MiKTeX/tex/generic/pgf/frontendlayer/tikz/libraries/tikzlibrarytopaths.code.tex
+Input:124:C:/Program Files/MiKTeX/tex/generic/pgf/frontendlayer/tikz/libraries/tikzlibraryshapes.geometric.code.tex
+Input:125:C:/Program Files/MiKTeX/tex/generic/pgf/libraries/shapes/pgflibraryshapes.geometric.code.tex
+Input:126:C:/Program Files/MiKTeX/tex/generic/pgf/libraries/pgflibraryarrows.meta.code.tex
+Input:127:C:/Program Files/MiKTeX/tex/generic/pgf/frontendlayer/tikz/libraries/tikzlibrarypositioning.code.tex
+Input:128:C:/Program Files/MiKTeX/tex/generic/pgf/frontendlayer/tikz/libraries/tikzlibraryfit.code.tex
+Input:129:C:/Program Files/MiKTeX/tex/generic/pgf/frontendlayer/tikz/libraries/tikzlibrarybackgrounds.code.tex
+Input:130:C:/Program Files/MiKTeX/tex/latex/biblatex/biblatex.sty
+Input:131:C:/Users/Asus/AppData/Roaming/MiKTeX/tex/latex/logreq/logreq.sty
+Input:132:C:/Users/Asus/AppData/Roaming/MiKTeX/tex/latex/logreq/logreq.def
+Input:133:C:/Program Files/MiKTeX/tex/latex/base/ifthen.sty
+Input:134:C:/Program Files/MiKTeX/tex/latex/biblatex/blx-dm.def
+Input:135:C:/Program Files/MiKTeX/tex/latex/biblatex/blx-unicode.def
+Input:136:C:/Program Files/MiKTeX/tex/latex/biblatex/blx-compat.def
+Input:137:C:/Program Files/MiKTeX/tex/latex/biblatex/biblatex.def
+Input:138:C:/Program Files/MiKTeX/tex/latex/biblatex/bbx/numeric.bbx
+Input:139:C:/Program Files/MiKTeX/tex/latex/biblatex/bbx/standard.bbx
+Input:140:C:/Program Files/MiKTeX/tex/latex/biblatex/cbx/numeric.cbx
+Input:141:C:/Program Files/MiKTeX/tex/latex/biblatex/biblatex.cfg
+Input:142:C:/Program Files/MiKTeX/tex/latex/l3kernel/expl3.sty
+Input:143:C:/Program Files/MiKTeX/tex/latex/l3backend/l3backend-dvips.def
+Input:144:C:/Program Files/MiKTeX/tex/latex/biblatex/blx-case-expl3.sty
+Input:145:C:/Program Files/MiKTeX/tex/latex/l3packages/xparse/xparse.sty
+Input:146:C:/Users/Asus/AppData/Roaming/MiKTeX/tex/latex/psnfss/t1phv.fd
+Input:147:C:/Program Files/MiKTeX/tex/latex/biblatex/lbx/english.lbx
+Output:dvi
+Magnification:1000
+Unit:1
+X Offset:4736287
+Y Offset:4736287
+Content:
+!11348
+{1
+[1,104:0,0:29760291,47949085,0
+(1,104:0,0:0,0,0
+)
+(1,104:0,0:0,0,0
+[1,104:-4736286,0:0,0,0
+(1,104:-4736286,-4736286:0,0,0
+(1,104:-4736286,0:0,0,0
+g1,104:-4736286,0
+)
+g1,104:-4736286,-4736286
+)
+]
+)
+[1,104:0,0:0,0,0
+(1,104:0,-2565200:0,0,0
+g1,104:0,-2565200
+)
+]
+[1,104:0,0:29760291,47949085,0
+[1,104:-74587,-2499419:29834878,50448504,0
+[1,104:-74587,-2499419:29834878,786432,0
+(1,104:-74587,-1712987:29834878,0,0
+h1,104:-74587,-1712987:29834878,0,0
+)
+]
+[1,104:-74587,-74587:29834878,46057592,0
+(1,91:-74587,5738817:29834878,560328,165537
+g1,91:11575259,5738817
+h1,91:11575259,5738817:0,0,0
+x1,91:12580311,5738817
+x1,91:13017562,5738817
+x1,91:14459865,5738817
+g1,91:14678485,5738817
+x1,91:15858122,5738817
+x1,91:16251338,5738817
+k1,104:14678485,5738817:-19661
+x1,104:16930807,5738817
+x1,104:18110444,5738817
+g1,91:18110444,5738817
+g1,91:29760290,5738817
+)
+(1,92:-74587,6892253:29834878,578419,174979
+g1,92:8166922,6892253
+h1,92:8166922,6892253:0,0,0
+x1,92:9171974,6892253
+x1,92:10308355,6892253
+k1,104:8166922,6892253:31449
+x1,104:10558424,6892253
+x1,104:12306641,6892253
+g1,92:12525261,6892253
+x1,92:13181132,6892253
+g1,92:13399752,6892253
+x1,92:14055623,6892253
+x1,92:14274243,6892253
+k1,104:13399752,6892253:-23588
+x1,104:14949785,6892253
+x1,104:16061791,6892253
+x1,104:17329498,6892253
+g1,92:17548118,6892253
+x1,92:18028627,6892253
+k1,104:17548118,6892253:-94368
+x1,104:19201977,6892253
+x1,104:20251064,6892253
+x1,104:21518782,6892253
+g1,92:21518782,6892253
+g1,92:29760291,6892253
+)
+(1,93:-74587,12063404:29834878,826129,251962
+g1,93:4664968,12063404
+h1,93:4664968,12063404:0,0,0
+x1,93:6049953,12063404
+k1,104:4664968,12063404:-22644
+x1,104:6971764,12063404
+x1,104:7663697,12063404
+x1,104:8670444,12063404
+x1,104:10369123,12063404
+g1,93:10683936,12063404
+x1,93:12382616,12063404
+g1,93:12697429,12063404
+x1,93:14144705,12063404
+x1,93:15466280,12063404
+x1,93:17166080,12063404
+k1,104:12697429,12063404:-11323
+x1,104:17784399,12063404
+g1,93:18099212,12063404
+x1,93:19168250,12063404
+g1,93:19483063,12063404
+x1,93:21308564,12063404
+x1,93:22944952,12063404
+x1,93:25020736,12063404
+g1,93:25020736,12063404
+g1,93:29760291,12063404
+)
+(1,94:-74587,13844938:29834878,826129,251962
+g1,94:4555682,13844938
+h1,94:4555682,13844938:0,0,0
+x1,94:5624720,13844938
+g1,94:5939533,13844938
+x1,94:8142139,13844938
+k1,104:5939533,13844938:-16976
+x1,104:10012969,13844938
+x1,104:11094449,13844938
+x1,104:11707115,13844938
+g1,94:12021928,13844938
+x1,94:13028674,13844938
+g1,94:13343487,13844938
+x1,94:16238039,13844938
+g1,94:16552852,13844938
+x1,94:19132577,13844938
+k1,104:16552852,13844938:-22644
+x1,104:20369217,13844938
+g1,94:20684030,13844938
+x1,94:21879889,13844938
+k1,104:20684030,13844938:-22644
+x1,104:25130022,13844938
+g1,94:25130022,13844938
+g1,94:29760291,13844938
+)
+(1,95:-74587,15328673:29834878,578419,174979
+g1,95:9959189,15328673
+h1,95:9959189,15328673:0,0,0
+x1,95:12712458,15328673
+g1,95:12982975,15328673
+x1,95:14643898,15328673
+g1,95:14862518,15328673
+x1,95:15824313,15328673
+x1,95:16436149,15328673
+x1,95:18009781,15328673
+k1,104:14862518,15328673:11788
+x1,104:19070656,15328673
+g1,95:19289276,15328673
+x1,95:19726516,15328673
+g1,95:19726516,15328673
+g1,95:29760292,15328673
+)
+(1,96:-74587,19043196:29834878,578419,165537
+g1,96:12172567,19043196
+h1,96:12172567,19043196:0,0,0
+x1,96:14576655,19043196
+g1,96:14847172,19043196
+x1,96:15939517,19043196
+x1,96:17513138,19043196
+g1,96:17513138,19043196
+g1,96:29760292,19043196
+)
+(1,98:-74587,22731505:29834878,527807,14707
+g1,98:11574137,22731505
+h1,98:11574137,22731505:0,0,0
+x1,98:12291747,22731505
+k1,104:11574137,22731505:17940
+x1,104:13506660,22731505
+g1,98:13706151,22731505
+x1,98:14184797,22731505
+k1,104:13706151,22731505:-21524
+x1,104:14562264,22731505
+x1,104:15797993,22731505
+g1,98:15997484,22731505
+x1,98:18111566,22731505
+g1,98:18111566,22731505
+g1,98:29760290,22731505
+)
+(1,99:-74587,23838082:29834878,511299,8247
+g1,99:13002905,23838082
+h1,99:13002905,23838082:0,0,0
+x1,99:13720515,23838082
+k1,104:13002905,23838082:10757
+x1,104:14249390,23838082
+g1,99:14448881,23838082
+x1,99:15685327,23838082
+x1,99:16682800,23838082
+g1,99:16682800,23838082
+g1,99:29760292,23838082
+)
+(1,100:-74587,24944659:29834878,511299,151053
+g1,100:11922535,24944659
+h1,100:11922535,24944659:0,0,0
+x1,100:13996427,24944659
+g1,100:14195918,24944659
+x1,100:14674564,24944659
+k1,104:14195918,24944659:-21524
+x1,104:15052031,24944659
+x1,104:16287760,24944659
+g1,100:16487251,24944659
+x1,100:17763169,24944659
+g1,100:17763169,24944659
+g1,100:29760291,24944659
+)
+(1,101:-74587,26051236:29834878,511299,8247
+g1,101:13067847,26051236
+h1,101:13067847,26051236:0,0,0
+x1,101:14942247,26051236
+g1,101:15141738,26051236
+x1,101:16617857,26051236
+g1,101:16617857,26051236
+g1,101:29760291,26051236
+)
+(1,102:-74587,27874865:29834878,511299,151053
+g1,102:12679617,27874865
+h1,102:12679617,27874865:0,0,0
+x1,102:13676382,27874865
+k1,104:12679617,27874865:-21524
+x1,104:14013667,27874865
+g1,102:14213158,27874865
+x1,102:15210631,27874865
+g1,102:15410122,27874865
+x1,102:17006086,27874865
+g1,102:17006086,27874865
+g1,102:29760290,27874865
+)
+]
+(1,104:-74587,47949085:29834878,0,0
+h1,104:-74587,47949085:29834878,0,0
+)
+]
+]
+]
+!5140
+}1
+!9
+{2
+[1,107:0,0:29760291,47949085,267389
+(1,107:0,0:0,0,0
+[1,107:-4736286,0:0,0,0
+(1,107:-4736286,-4736286:0,0,0
+(1,107:-4736286,0:0,0,0
+g1,107:-4736286,0
+)
+g1,107:-4736286,-4736286
+)
+]
+)
+[1,107:0,0:0,0,0
+(1,107:0,-2565200:0,0,0
+g1,107:0,-2565200
+)
+]
+[1,107:0,0:29760291,47949085,267389
+[1,107:-74587,-2499419:29834878,50448504,267389
+[1,107:-74587,-2499419:29834878,786432,0
+(1,107:-74587,-1712987:29834878,786432,0
+(1,107:-74587,-1712987:29834878,786432,0
+(1,107:-74587,-1712987:29834878,786432,0
+[1,107:-74587,-2499419:29834878,786432,0
+(1,107:-74587,-1948919:29834878,550500,235932
+(1,107:-74587,-1948919:0,550500,235932
+[1,107:-74587,-2499419:29834878,550500,235932
+(1,107:-74587,-1948919:29834878,550500,235932
+h1,107:-74587,-1948919:0,0,0
+x1,107:1309516,-1948919
+g1,107:1491699,-1948919
+x1,107:2293195,-1948919
+x1,107:2803059,-1948919
+x1,107:4114419,-1948919
+x1,107:4998482,-1948919
+g1,107:5180665,-1948919
+x1,107:5545031,-1948919
+g1,107:5727214,-1948919
+x1,107:6091590,-1948919
+g1,107:6273773,-1948919
+x1,107:8313228,-1948919
+g1,107:8495411,-1948919
+x1,107:8859787,-1948919
+r1,107:8859787,-1948919:0,550500,235932
+g1,107:19310039,-1948919
+g1,107:29760291,-1948919
+)
+]
+g1,107:-74587,-1948919
+)
+g1,107:-74587,-1948919
+[1,107:-74587,-1948919:29834878,0,0
+(1,107:-74587,-1948919:29834878,0,0
+g1,107:14842852,-1948919
+h1,107:14842852,-1948919:0,0,0
+g1,107:14842852,-1948919
+g1,107:29760291,-1948919
+)
+]
+g1,107:29760291,-1948919
+(1,107:29760291,-1948919:0,550500,235932
+g1,107:-74587,-1948919
+[1,107:-74587,-2499419:29834878,550500,235932
+(1,107:-74587,-1948919:29834878,550500,235932
+g1,107:24314301,-1948919
+h1,107:24314301,-1948919:0,0,0
+x1,107:25151845,-1948919
+x1,107:25516221,-1948919
+x1,107:26718141,-1948919
+g1,107:26900324,-1948919
+x1,107:27883356,-1948919
+x1,107:28211036,-1948919
+x1,107:28777260,-1948919
+x1,107:29760291,-1948919
+r1,107:29760291,-1948919:0,550500,235932
+g1,107:29760291,-1948919
+g1,107:29760291,-1948919
+)
+]
+)
+)
+]
+)
+g1,107:29760291,-1712987
+)
+)
+]
+[1,107:-74587,-74587:29834878,46057592,0
+(1,106:-74587,646309:29834878,642250,275254
+r1,106:-74587,646309:0,642250,275254
+x1,106:1454232,646309
+x1,106:3333001,646309
+k1,107:-74587,646309:0
+r1,106:3333001,646309:0,642250,275254
+g1,106:29760291,646309
+g1,106:29760291,646309
+)
+]
+(1,107:-74587,47949085:29834878,891289,267389
+(1,107:-74587,47949085:29834878,891289,267389
+(1,107:-74587,47949085:29834878,891289,267389
+[1,107:-74587,47057796:29834878,891289,267389
+(1,107:-74587,47949085:29834878,623900,267389
+(1,107:-74587,47949085:0,0,0
+[1,107:-74587,47949085:29834878,0,0
+(1,107:-74587,47949085:29834878,0,0
+h1,107:-74587,47949085:0,0,0
+g1,107:14842852,47949085
+g1,107:29760291,47949085
+)
+]
+g1,107:-74587,47949085
+)
+g1,107:-74587,47949085
+[1,107:-74587,47325185:29834878,623900,267389
+(1,107:-74587,47949085:29834878,623900,267389
+g1,107:14643357,47949085
+h1,107:14643357,47949085:0,0,0
+x1,107:15042348,47949085
+r1,107:15042348,47949085:0,623900,267389
+g1,107:15042348,47949085
+g1,107:29760292,47949085
+)
+]
+g1,107:29760291,47949085
+(1,107:29760291,47949085:0,0,0
+g1,107:-74587,47949085
+[1,107:-74587,47949085:29834878,0,0
+(1,107:-74587,47949085:29834878,0,0
+g1,107:29760291,47949085
+h1,107:29760291,47949085:0,0,0
+g1,107:29760291,47949085
+g1,107:29760291,47949085
+)
+]
+)
+)
+]
+)
+g1,107:29760291,47949085
+)
+)
+]
+]
+]
+!3289
+}2
+!9
+Postamble:
+Count:273
+!24
+Post scriptum:
