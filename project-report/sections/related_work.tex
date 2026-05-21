@@ -1,26 +1,7 @@
 \section{Related Work}
 
-The prediction of repository popularity on GitHub has attracted growing research interest,
-particularly as social coding platforms have become central to software development practice.
+GitHub popularity prediction has received increasing research attention. Borges et al.~\cite{borges2016} identified external social links and intrinsic factors such as project age and contributor count as strong star predictors, motivating feature selection around fork count, watcher count, and subscriber count.
 
-Borges et al.~\cite{borges2016} conducted one of the first systematic analyses of the factors
-that drive GitHub repository popularity. Their study found that external social links---especially
-references from platforms such as Hacker News and Reddit---are among the strongest predictors of
-rapid star growth, alongside intrinsic factors such as project age and the number of contributors.
-Their work motivates the inclusion of activity-based features such as fork count, watcher count,
-and subscriber count in our feature set.
+Hudson et al.~\cite{hudson2022} applied machine learning to predict long-term project success, showing that ensemble methods such as Random Forest and Gradient Boosting outperform linear baselines on non-linear regression tasks due to their ability to capture feature interactions.
 
-Hudson et al.~\cite{hudson2022} applied machine learning techniques to predict the long-term
-trajectory of open-source project success, framing popularity prediction as a regression problem
-over historical activity signals. Their findings support the use of ensemble methods such as
-Random Forest and Gradient Boosting, which capture non-linear interactions between features more
-effectively than linear baselines.
-
-Tian et al.~\cite{tian2015} examined the relationship between software quality metrics and
-community adoption, showing that issue response time and commit frequency are meaningful signals
-for predicting user engagement. This reinforces the relevance of features such as open issue
-count and days since the last push that we extract from the GitHub API.
-
-Taken together, these works establish the feasibility of feature-based star prediction and
-motivate the comparative evaluation of multiple regression models under a consistent evaluation
-protocol.
+Tian et al.~\cite{tian2015} demonstrated that software quality metrics, issue response time, and commit frequency correlate with user engagement, justifying the inclusion of open issue count and days-since-push in our feature set. These works collectively establish the viability of feature-based star prediction and inform our comparative evaluation strategy.
