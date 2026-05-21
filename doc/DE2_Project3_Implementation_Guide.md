@@ -1,11 +1,23 @@
-# DE-II Project 3: GitHub Star Predictor — Implementation Guide
+# DE-II Project 3: Diabetes Prediction with Distributed ML — Implementation Guide
 
-> **Stack:** Python · Docker · Celery · RabbitMQ · Ansible · OpenStack (SSC/SNIC) · Git Hooks
-> **Base repo:** `https://github.com/bdtiger/data-engineering-II-project`
+> **Stack:** Python · TensorFlow/Keras · Docker · Celery · RabbitMQ · Flask · Ansible · OpenStack (SSC/SNIC)
+> **Project Type:** Distributed machine learning pipeline with REST API and asynchronous workers
+> **GitHub Repo:** `https://github.com/bdtiger/data-engineering-II-project`
 
 ---
 
-## Architecture overview
+## Project Overview
+
+This project implements a **distributed machine learning pipeline** for diabetes prediction using the Pima Indians Diabetes Dataset. It demonstrates:
+- **Data collection** via GitHub API
+- **Model training** with TensorFlow/Keras neural networks
+- **Production serving** with Flask REST API + Celery workers
+- **Cloud infrastructure** deployment on OpenStack with Ansible
+- **CI/CD pipeline** using Git hooks for automated model deployment
+
+---
+
+## Architecture Overview
 
 ```
 ┌──────────────────────────────────────────────────────────────────────┐
@@ -13,31 +25,32 @@
 │                                                                      │
 │  ┌─────────────────┐   Ansible provision    ┌──────────────────────┐ │
 │  │  Client VM      │ ──────────────────────►│  Dev VM              │ │
-│  │                 │                        │  · crawl GitHub API  │ │
-│  │  start_         │ ──────────────────────►│  · train models      │ │
-│  │  instances.py   │   Ansible provision    │  · bare git repo     │ │
-│  │  Ansible ctrl   │                        │  · post-receive hook │ │
+│  │                 │                        │  · GitHub crawler    │ │
+│  │  start_         │ ──────────────────────►│  · neural_net.py     │ │
+│  │  instances.py   │   Ansible provision    │  · model training    │ │
+│  │  Ansible ctrl   │                        │  · bare git repo     │ │
 │  └─────────────────┘                        └──────────┬───────────┘ │
 │                                                        │ git push    │
-│                                                        │ (Git Hook)  │
+│                                                        │ (deploy)    │
 │                                                        ▼             │
 │                                             ┌──────────────────────┐ │
-│                                             │  Prod VM             │ │
-│                                             │  · best_model.pkl    │ │
+│                                             │  Prod VM (Docker)    │ │
+│                                             │  · Flask web app     │ │
 │                                             │  · Celery workers    │ │
 │                                             │  · RabbitMQ broker   │ │
+│                                             │  · TensorFlow model  │ │
 │                                             └──────────────────────┘ │
 │                                                                      │
-│  VM 4 & 5: start ONLY if needed for scalability testing              │
 └──────────────────────────────────────────────────────────────────────┘
 ```
 
-### End-to-end flow
-1. Client VM runs `start_dev_prod_instances.py` → Dev and Prod VMs appear on OpenStack.
-2. Client VM runs Ansible → both VMs get the repo cloned, Dev gets Python packages + bare git repo, Prod gets Docker + RabbitMQ + Celery containers running.
-3. Dev VM: crawl GitHub API → extract features → train models → compare R² → pick best.
-4. `git push deployment main` on Dev → post-receive hook fires → SCP `best_model.pkl` to Prod → containers restart.
-5. Celery worker on Prod loads the new model and serves predictions via RabbitMQ.
+### End-to-end Flow
+1. **Infrastructure Setup**: Client VM runs `start_dev_prod_instances.py` → Dev and Prod VMs provisioned on OpenStack
+2. **Configuration**: Client VM runs Ansible playbook → installs Python packages on Dev, Docker/RabbitMQ on Prod
+3. **Data Collection**: Dev VM runs `github_crawler.py` → fetches top repos from GitHub API → saves features to CSV
+4. **Model Training**: Dev VM runs `neural_net.py` → trains TensorFlow model on dataset → saves model files
+5. **Deployment**: Dev VM pushes to deployment branch → Git hook triggered → model copied to Prod → Celery workers restart
+6. **Production Serving**: Flask API receives requests → Celery tasks executed → model predictions returned with accuracy metrics
 
 ---
 
@@ -56,7 +69,7 @@ This installs all dependencies (Ansible, OpenStack CLI tools, Python packages) a
 
 ### 0.2 Source your OpenStack credentials
 
-Download `openrc.sh` from the SSC dashboard (Project → API Access → Download OpenStack RC File):
+Download `UPPMAX_2026_1-24_openrc.sh` from the SSC dashboard (Project → API Access → Download OpenStack RC File):
 
 ```bash
 cd data-engineering-II-project/openstack-client/
@@ -85,7 +98,9 @@ data-engineering-II-project/
     ├── start_worker_instances.py         (Provision extra worker VMs if needed)
     ├── dev-cloud-cfg.txt                 (cloud-init: creates appuser on Dev)
     ├── prod-cloud-cfg.txt                (cloud-init: creates appuser on Prod)
-    └── ansible_configuration.yml         (Configures both VMs)
+    ├── ansible_configuration.yml         (Configures both VMs)
+    ├── inventory.ini                     (Ansible inventory)
+    └── ansible_configuration.yml         (Ansible config)
 ```
 
 ### 1.1 Review `constants.py`
@@ -100,33 +115,36 @@ KEY_NAME    = "de1-course-snic-key"
 ```
 
 ### 1.2 Provision Dev and Prod VMs
+
+Generate SSH keys:
 ```bash
 ssh-keygen -t rsa
 # enter the key name /home/ubuntu/cluster-keys/cluster-key
 ```
 
-open prod-cloud-cfg.txt delete the old key from the section `ssh_authorized_keys:` and
-copy the complete contents of `/home/ubuntu/cluster-keys/cluster-key.pub` in the
-`prod-cloud-cfg.txt` file.
+Update SSH public keys in cloud-init config files:
 
-Open the `dev-cloud-cfg.txt`. Delete the old key from the section
-`ssh_authorized_keys:` and copy the complete contents of
-`/home/ubuntu/cluster-keys/cluster-key.pub` in the `dev-cloud-cfg.txt` file.
+```bash
+# Open prod-cloud-cfg.txt and copy your SSH public key into ssh_authorized_keys:
+cat /home/ubuntu/cluster-keys/cluster-key.pub
+# Paste into prod-cloud-cfg.txt under ssh_authorized_keys
 
+# Do the same for dev-cloud-cfg.txt
+```
+
+Provision the VMs:
 ```bash
 cd data-engineering-II-project/openstack-client/
 python3 start_dev_prod_instances.py
 ```
 
-This creates two VMs (`group_5_dev_server_XXXX` and `group_5_prod_server_XXXX`) and prints their IP addresses. Note both IPs — you will need them.
-
-**Wait 2–3 minutes** before running Ansible. cloud-init needs time to create the `appuser` account on both VMs.
+This creates two VMs and prints their IP addresses. **Wait 2–3 minutes** for cloud-init to complete before running Ansible.
 
 ---
 
 ## Phase 2 — Configure VMs with Ansible
 
-Ansible does all the heavy lifting: installs packages, clones the repo, sets up the bare git repo on Dev, installs Docker and starts containers on Prod.
+Ansible configures both VMs: installs packages on Dev, sets up Docker/RabbitMQ on Prod.
 
 ```bash
 cd data-engineering-II-project/openstack-client/
@@ -138,18 +156,71 @@ ansible-inventory -i inventory.ini --list
 ansible-playbook -i inventory.ini ansible_configuration.yml --private-key=/home/ubuntu/cluster-keys/cluster-key
 ```
 
-After this completes:
-
-- **Dev VM** has: Python packages for crawling and training, a bare git repo at `/opt/model_repo.git`, and an SSH keypair at `/home/appuser/.ssh/id_rsa`.
-- **Prod VM** has: Docker running, RabbitMQ 3.12 and Celery worker containers up, models directory at `/data-engineering-II-project/ci_cd/production_server/models/`.
+After completion:
+- **Dev VM**: Python packages installed, ready for training
+- **Prod VM**: Docker running, Flask app on port 5100, RabbitMQ on port 5672
 
 ---
 
-## Phase 3 — Set Up the Git Hook CI/CD Pipeline
+## Phase 3 — Data Collection & Model Training on Dev
 
-The post-receive hook on Dev is what triggers deployment to Prod automatically when you push a trained model.
+All steps run on the Dev VM using the scripts in `crawler/` and `ci_cd/development_server/`.
 
-### 3.1 Authorize Dev's SSH key on Prod
+### 3.1 Collect GitHub Repository Data
+
+```bash
+# SSH into Dev VM
+ssh -i ~/.ssh/your_key appuser@<DEV_IP>
+cd /data-engineering-II-project
+
+# Set GitHub API token (optional, increases rate limit)
+export GITHUB_TOKEN=ghp_XXXXXXXXXXXX
+
+# Crawl top GitHub repositories
+python3 crawler/github_crawler.py
+```
+
+This script:
+- Searches for repos with 50+ stars
+- Collects up to 1000 repos
+- Extracts features: stars, forks, issues, size, language, creation date, etc.
+- Saves to `crawler/repos.csv`
+
+### 3.2 Train the TensorFlow Model
+
+```bash
+# Move dataset to development directory
+cp crawler/repos.csv ci_cd/development_server/github-repository-data.csv
+cd ci_cd/development_server/
+
+# Train neural network model
+python3 neural_net.py
+```
+
+This script:
+- Loads dataset from `github-repository-data.csv`
+- Creates a 3-layer neural network (16-8-1 neurons)
+- Trains for 250 epochs with batch size 10
+- Saves model to `model.h5` and `model.json`
+- Prints accuracy metrics
+
+**Model Architecture:**
+- Input layer: 8 features
+- Hidden layer 1: 16 neurons, ReLU activation
+- Hidden layer 2: 8 neurons, ReLU activation
+- Output layer: 1 neuron, sigmoid activation (binary classification)
+- Loss: binary crossentropy
+- Optimizer: Adam
+
+---
+
+## Phase 4 — Deploy Model to Production via Git Hook
+
+Deployment is automated through a Git post-receive hook. When you push the trained model to the deployment branch, the hook automatically copies the model to Prod and restarts Celery workers.
+
+### 4.1 Set Up Git Hook Deployment
+
+First, authorize Dev's SSH key on Prod:
 
 ```bash
 # On Dev VM — get the public key
@@ -164,7 +235,7 @@ echo "<paste key here>" >> /home/appuser/.ssh/authorized_keys
 chmod 600 /home/appuser/.ssh/authorized_keys
 ```
 
-### 3.2 Verify Dev-to-Prod SSH works
+Verify Dev-to-Prod SSH works:
 
 ```bash
 # On Dev VM
@@ -173,17 +244,19 @@ ssh -i /home/appuser/.ssh/id_rsa \
     appuser@<PROD_IP> "echo SSH OK"
 ```
 
-### 3.3 Create the post-receive hook on Dev
+### 4.2 Create the Post-Receive Hook
+
+On Dev VM, create the post-receive hook:
 
 ```bash
 # On Dev VM
 cat > /opt/model_repo.git/hooks/post-receive << 'HOOK'
 #!/bin/bash
-PROD_IP="<PROD_IP>"   # replace with actual prod IP
-MODEL_SRC="/data-engineering-II-project/ci_cd/production_server/models/best_model.pkl"
-MODEL_DEST="/data-engineering-II-project/ci_cd/production_server/models/best_model.pkl"
+PROD_IP="<PROD_IP>"   # Replace with actual Prod IP
+MODEL_SRC="/data-engineering-II-project/ci_cd/development_server/model.h5"
+MODEL_DEST="/data-engineering-II-project/ci_cd/production_server/model.h5"
 
-echo "==> Deploying best_model.pkl to Prod..."
+echo "==> Deploying model.h5 to Prod..."
 scp -i /home/appuser/.ssh/id_rsa \
     -o StrictHostKeyChecking=no \
     $MODEL_SRC appuser@${PROD_IP}:${MODEL_DEST}
@@ -192,7 +265,7 @@ echo "==> Restarting Celery worker on Prod..."
 ssh -i /home/appuser/.ssh/id_rsa \
     -o StrictHostKeyChecking=no \
     appuser@${PROD_IP} \
-    "cd /data-engineering-II-project/ci_cd/production_server && docker compose restart worker"
+    "cd /data-engineering-II-project/ci_cd/production_server && docker compose restart worker_1"
 
 echo "==> Deploy done."
 HOOK
@@ -200,7 +273,9 @@ HOOK
 chmod +x /opt/model_repo.git/hooks/post-receive
 ```
 
-### 3.4 Add the deployment remote on Dev
+### 4.3 Add Deployment Remote and Deploy
+
+Set up the deployment remote on Dev VM:
 
 ```bash
 # On Dev VM
@@ -209,181 +284,177 @@ git remote get-url deployment 2>/dev/null || \
 git remote add deployment /opt/model_repo.git
 ```
 
----
-
-## Phase 4 — Data Collection & Training on Dev
-
-All steps run directly on the Dev VM — no Docker, no Celery involved.
-
-```bash
-# SSH into Dev
-ssh -i ~/.ssh/your_key appuser@<DEV_IP>
-cd /data-engineering-II-project
-
-# 1. Collect 1000 repos with >= 50 stars (needs a GitHub PAT)
-python3 data_collection/collect_github.py \
-    --token ghp_XXXXXXXXXXXX \
-    --total 1000 \
-    --min-stars 50 \
-    --out data.csv
-
-# 2. Train all models and pick the best by R²
-python3 training/train_models.py \
-    --data      data.csv \
-    --model-dir ci_cd/production_server/models/
-
-# 3. Review results
-cat ci_cd/production_server/models/metadata.json
-```
-
-> **Note on commits:** The GitHub search API does not return commit count directly.
-> The features used (forks, watchers, open issues, size, age, etc.) are all available
-> from the search endpoint and are good proxies for activity. Commit count would require
-> a separate API call per repo (1000 extra requests) and is not required.
-
----
-
-## Phase 5 — Deploy Model to Prod via Git Hook
+After training completes, commit and push the model:
 
 ```bash
 # On Dev VM
 cd /data-engineering-II-project
-
-git add ci_cd/production_server/models/best_model.pkl \
-        ci_cd/production_server/models/metadata.json
-git commit -m "deploy: <ModelName> R2=<score>"
+git add ci_cd/development_server/model.h5 \
+        ci_cd/development_server/model.json
+git commit -m "deploy: trained neural network model"
 git push deployment main
-# post-receive fires → SCP model to Prod → worker container restarts
+# The post-receive hook fires automatically → model copied to Prod → workers restart
 ```
 
 ---
 
-## Phase 6 — Test the Production App
+## Phase 5 — Test the Production Application
 
-### 6.1 Check containers are running
+### 5.1 Check Containers Status
 
 ```bash
 # On Prod VM
-cd /data-engineering-II-project/ci_cd/production_server
+cd /data-engineering-II-project/ci_cd/production_server/
 docker compose ps
-# Should show: rabbit and worker both Up
+# Should show: web, rabbit, and worker_1 all Up
 ```
 
-### 6.2 Submit a prediction task
+### 5.2 Access the Flask Web Interface
 
-Send a task directly to the Celery worker via the RabbitMQ broker:
-
-```python
-# Run this on the Prod VM (or any machine that can reach Prod's RabbitMQ)
-from workerA import get_predictions
-result = get_predictions.delay()
-print(result.get(timeout=30))
+Open browser and navigate to:
+```
+http://<PROD_IP>:5100/
 ```
 
-Or test the add_nums task first to confirm the queue is working:
+Available endpoints:
+- `GET /` - Welcome page
+- `POST /accuracy` - Get model accuracy on test data
+- `POST /predictions` - Get model predictions with accuracy visualization
+
+### 5.3 Test Celery Workers Directly
 
 ```python
-from workerA import add_nums
+# Run on Prod VM
+from workerA import add_nums, get_predictions, get_accuracy
+
+# Test simple addition
 result = add_nums.delay(3, 4)
-print(result.get(timeout=10))  # should print 7
-```
+print(result.get(timeout=10))  # Should print 7
 
-### 6.3 Rank 5 GitHub repositories
+# Get predictions
+result = get_predictions.delay()
+predictions = result.get(timeout=30)
+print(f"Predictions: {predictions['predicted'][:10]}")
+print(f"Actual: {predictions['y'][:10]}")
 
-Provide feature values for 5 repos and compare their predicted star counts:
-
-```python
-# On Prod VM
-import joblib, numpy as np
-
-model = joblib.load(
-    '/data-engineering-II-project/ci_cd/production_server/models/best_model.pkl'
-)
-
-FEATURE_COLS = [
-    "forks", "watchers", "open_issues", "size_kb",
-    "has_wiki", "has_projects", "has_downloads", "is_fork",
-    "age_days", "days_since_push", "topics_count",
-    "network_count", "subscribers_count", "language_enc",
-]
-
-repos = [
-    {"name": "facebook/react",        "forks": 44000,  "watchers": 44000,  "open_issues": 800,  "size_kb": 210000,  "has_wiki": 1, "has_projects": 0, "has_downloads": 1, "is_fork": 0, "age_days": 3900,  "days_since_push": 1, "topics_count": 5,  "network_count": 44000,  "subscribers_count": 6700, "language_enc": 7},
-    {"name": "torvalds/linux",         "forks": 172000, "watchers": 172000, "open_issues": 400,  "size_kb": 4500000, "has_wiki": 0, "has_projects": 0, "has_downloads": 1, "is_fork": 0, "age_days": 12800, "days_since_push": 0, "topics_count": 0,  "network_count": 172000, "subscribers_count": 8000, "language_enc": 3},
-    {"name": "microsoft/vscode",       "forks": 29000,  "watchers": 29000,  "open_issues": 6000, "size_kb": 380000,  "has_wiki": 0, "has_projects": 1, "has_downloads": 1, "is_fork": 0, "age_days": 3200,  "days_since_push": 1, "topics_count": 10, "network_count": 29000,  "subscribers_count": 3400, "language_enc": 7},
-    {"name": "tensorflow/tensorflow",  "forks": 88000,  "watchers": 88000,  "open_issues": 2000, "size_kb": 640000,  "has_wiki": 1, "has_projects": 0, "has_downloads": 1, "is_fork": 0, "age_days": 2900,  "days_since_push": 1, "topics_count": 8,  "network_count": 88000,  "subscribers_count": 7100, "language_enc": 2},
-    {"name": "vuejs/vue",              "forks": 35000,  "watchers": 35000,  "open_issues": 500,  "size_kb": 30000,   "has_wiki": 0, "has_projects": 0, "has_downloads": 1, "is_fork": 0, "age_days": 3600,  "days_since_push": 2, "topics_count": 6,  "network_count": 35000,  "subscribers_count": 4200, "language_enc": 7},
-]
-
-results = []
-for repo in repos:
-    fv = np.array([repo[c] for c in FEATURE_COLS]).reshape(1, -1)
-    predicted = int(np.expm1(model.predict(fv)[0]))
-    results.append({"name": repo["name"], "predicted_stars": predicted})
-
-for r in sorted(results, key=lambda x: x["predicted_stars"], reverse=True):
-    print(f"{r['predicted_stars']:>10,}  {r['name']}")
+# Get accuracy
+result = get_accuracy.delay()
+accuracy = result.get(timeout=30)
+print(f"Model Accuracy: {accuracy:.2f}%")
 ```
 
 ---
 
-## Phase 7 — Scalability Analysis
+## Phase 6 — Scalability Testing
 
-Scale Celery workers on Prod and measure throughput before and after.
+Scale Celery workers and measure performance impact.
 
 ```bash
-# On Prod VM — check current worker count
-cd /data-engineering-II-project/ci_cd/production_server
+# On Prod VM
+cd /data-engineering-II-project/ci_cd/production_server/
+
+# View current workers
 docker compose ps
 
-# Baseline: 1 worker — run a batch of tasks and time them
-# Then scale up:
-docker compose up -d --scale worker=4
+# Scale up to 4 workers
+docker compose up -d --scale worker_1=4
 
-# Run the same batch and compare
+# Scale down to 1 worker
+docker compose up -d --scale worker_1=1
 ```
 
-For load testing from the Client VM, install `apache2-utils` and use `ab`, or write a simple Python script that submits N tasks via Celery and measures total time.
+**Benchmark:** Submit multiple tasks and measure response time at different worker counts.
 
-Record requests/sec and mean latency at 1 worker vs 4 workers — that table goes in the report.
+```python
+# Load testing script
+from workerA import get_predictions
+import time
 
----
-
-## Phase 8 — Report Checklist
-
-The report must be **4 pages** with these sections:
-
-| Section | What to include |
-|---|---|
-| Introduction | Problem statement, why GitHub stars matter, your approach |
-| Related work | 2–3 papers on GitHub repo popularity prediction |
-| System architecture | Diagrams: data pipeline, CI/CD pipeline, prod serving stack |
-| Results — model comparison | Table of all models with R² scores; which won and why |
-| Results — scalability | Table: workers=1 vs workers=4, requests/sec and avg latency |
+task_ids = []
+start = time.time()
+for i in range(10):
+    task_ids.append(get_predictions.delay())
+elapsed = time.time() - start
+print(f"Submitted 10 tasks in {elapsed:.2f}s")
+```
 
 ---
 
-## Quick-reference command sequence
+## Project File Structure
+
+```
+data-engineering-II-project/
+├── crawler/
+│   ├── github_crawler.py           # GitHub API crawler - fetches repo data
+│   └── repos.csv                   # Output: collected repository features
+│
+├── ci_cd/
+│   ├── development_server/
+│   │   ├── neural_net.py          # Model training script (TensorFlow/Keras)
+│   │   ├── github-repository-data.csv  # Input dataset
+│   │   └── model.h5               # Trained model weights
+│   │
+│   └── production_server/
+│       ├── app.py                 # Flask REST API
+│       ├── workerA.py             # Celery worker tasks
+│       ├── requirements.txt       # Python dependencies
+│       ├── docker-compose.yml     # Docker orchestration
+│       ├── Dockerfile             # Container image definition
+│       ├── model.h5               # Model weights (production)
+│       ├── model.json             # Model architecture
+│       ├── static/                # Static files (Chart.min.js)
+│       └── templates/             # HTML templates (result.html, etc.)
+│
+└── openstack-client/
+    ├── start_dev_prod_instances.py    # Provision VMs
+    ├── ansible_configuration.yml       # Configuration management
+    ├── constants.py                    # VM configuration
+    ├── setup_client_vm.sh             # Client setup script
+    └── UPPMAX_2026_1-24_openrc.sh     # OpenStack credentials
+```
+
+---
+
+## Quick-Reference Command Sequence
 
 ```bash
 # ── Client VM ───────────────────────────────────────────────────────────────
 cd data-engineering-II-project/openstack-client/
 source UPPMAX_2026_1-24_openrc.sh
-python3 start_dev_prod_instances.py        # wait 2-3 min
-ansible-playbook -i inventory.ini ansible_configuration.yml
+ssh-keygen -t rsa -f ~/.ssh/cluster-key
+# Update SSH keys in dev-cloud-cfg.txt and prod-cloud-cfg.txt
+python3 start_dev_prod_instances.py        # Wait 2-3 minutes for cloud-init
+ansible-playbook -i inventory.ini ansible_configuration.yml \
+  --private-key=~/.ssh/cluster-key
 
 # ── Dev VM ──────────────────────────────────────────────────────────────────
-ssh appuser@<DEV_IP>
+ssh -i ~/.ssh/cluster-key appuser@<DEV_IP>
 cd /data-engineering-II-project
-python3 data_collection/collect_github.py --token <TOKEN> --total 1000
-python3 training/train_models.py --data data.csv --model-dir ci_cd/production_server/models/
-git add ci_cd/production_server/models/best_model.pkl ci_cd/production_server/models/metadata.json
-git commit -m "deploy: best model"
-git push deployment main
+export GITHUB_TOKEN=ghp_XXXXXXXXXXXX
+python3 crawler/github_crawler.py
+cp crawler/repos.csv ci_cd/development_server/github-repository-data.csv
+cd ci_cd/development_server/
+python3 neural_net.py
 
-# ── Prod VM ─────────────────────────────────────────────────────────────────
-cd /data-engineering-II-project/ci_cd/production_server
-docker compose ps        # verify rabbit and worker are Up
+# ── Set Up Git Hook Deployment ──────────────────────────────────────────────
+# On Dev VM: authorize Prod's SSH key (see Phase 4.1)
+# On Dev VM: create post-receive hook (see Phase 4.2)
+# On Dev VM: add deployment remote
+git remote add deployment /opt/model_repo.git
+
+# ── Deploy to Prod via Git Push ─────────────────────────────────────────────
+# On Dev VM
+cd /data-engineering-II-project
+git add ci_cd/development_server/model.h5 ci_cd/development_server/model.json
+git commit -m "deploy: trained model"
+git push deployment main
+# Post-receive hook fires automatically → SCP model to Prod → restart workers
+
+# ── Prod VM (Testing) ───────────────────────────────────────────────────────
+ssh -i ~/.ssh/cluster-key appuser@<PROD_IP>
+cd /data-engineering-II-project/ci_cd/production_server/
+docker compose ps
+# Access Flask app: http://<PROD_IP>:5100/
 ```
 
 ---
@@ -394,9 +465,21 @@ docker compose ps        # verify rabbit and worker are Up
 |---|---|---|
 | `openstack server list` fails | `openrc` not sourced | `source UPPMAX_2026_1-24_openrc.sh` |
 | `ansible-inventory` fails | `inventory.ini` not generated | Run `start_dev_prod_instances.py` first |
-| Ansible connection errors | VMs still initializing | Wait 2–3 min after provisioning, then retry |
-| SSH Dev→Prod fails | Public key not in Prod's `authorized_keys` | See Phase 3.1 |
-| Celery task stays `PENDING` | RabbitMQ not running | `docker compose ps` on Prod; `docker compose restart rabbit` |
-| `best_model.pkl` not found after deploy | SCP path mismatch in hook | Check paths in `/opt/model_repo.git/hooks/post-receive` |
-| GitHub API 403 | Token missing or expired | Generate new PAT: GitHub → Settings → Developer settings → Personal access tokens |
-| GitHub API 422 | Search result set too large | Raise `--min-stars` to 500 |
+| SSH connection timeout | VMs still initializing | Wait 2–3 min after provisioning, retry |
+| Docker containers won't start | Port conflicts | Check `docker compose ps` and verify ports |
+| Celery tasks stay `PENDING` | RabbitMQ not running | `docker compose restart rabbit` |
+| Model file not found in Prod | SCP path mismatch | Verify paths in docker volume mounts |
+| GitHub API rate limit (403) | Token expired or missing | Generate new PAT in GitHub settings |
+| `model.h5` load error | Version mismatch | Use same TensorFlow version as training |
+
+---
+
+## Key Technologies
+
+- **TensorFlow/Keras**: Deep learning framework (3-layer neural network)
+- **Celery**: Distributed task queue for async job processing
+- **RabbitMQ**: Message broker for Celery
+- **Flask**: REST API web framework
+- **Docker**: Containerization for production deployment
+- **Ansible**: Infrastructure automation
+- **OpenStack**: Cloud infrastructure provider
