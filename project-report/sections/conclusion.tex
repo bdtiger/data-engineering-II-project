@@ -2,7 +2,7 @@
 
 This project implemented a production-grade distributed ML pipeline for predicting GitHub repository stargazers across six phases: infrastructure provisioning, data collection and training, Git Hook deployment, production serving, and scalability testing.
 
-\textbf{Model Performance:} The Neural Network achieved $R^2=0.8489$ (84.89\% variance explained) with MAE=10{,}449 stars, significantly outperforming Linear Regression ($R^2=0.4011$) and SVR ($R^2=0.8290$). Production MAE (log-stars) of 0.4540 confirms model generalization to unseen data. Training completed in 25.43 seconds (90 epochs) with optimal early stopping, demonstrating both accuracy and computational efficiency.
+\textbf{Model Performance:} The Neural Network achieved $R^2=0.8489$ (84.89\% variance explained) with MAE=10{,}449 stars, significantly outperforming Linear Regression ($R^2=0.4011$) and SVR ($R^2=0.8290$). Production MAE (log-stars) of 0.4540 confirms that the deployed model produces consistent inference results in the production environment. Training completed in 25.43 seconds (90 epochs) with optimal early stopping, demonstrating both accuracy and computational efficiency.
 
 \textbf{Infrastructure Insights:} The system demonstrates production-ready ML deployment patterns: OpenStack VM provisioning enables reproducible infrastructure, automated Git Hook CI/CD supports reproducible model rollouts and reduces manual deployment effort, and asynchronous serving via Flask + Celery + RabbitMQ decouples request handling from computation. Model inference latency (50-100ms per request) meets production SLAs. Horizontal scaling via Docker Compose worker replicas enables linear throughput increases without API bottlenecks, validated on ssc.medium VMs.
 
