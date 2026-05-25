@@ -75,10 +75,10 @@ print(f"  Accuracy (binary classification): {accuracy_svr:.6f}")
 print("\n" + "=" * 80)
 print("MODEL 2: NEURAL NETWORK (MLPRegressor)")
 print("=" * 80)
-print("Architecture: MLPRegressor with hidden layers (100, 50, 25)")
+print("Architecture: MLPRegressor with hidden layers (64, 32)")
 
 # Train Neural Network model
-nn_model = MLPRegressor(hidden_layer_sizes=(100, 50, 25), max_iter=1000, random_state=42, activation='relu')
+nn_model = MLPRegressor(hidden_layer_sizes=(64, 32), max_iter=1000, random_state=42, activation='relu')
 nn_model.fit(X_train_scaled, y_train)
 
 # Predictions

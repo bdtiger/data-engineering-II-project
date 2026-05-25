@@ -8,11 +8,11 @@ We evaluated three regression models on 1{,}000 GitHub repositories (80/20 train
   \centering
   \begin{tabular}{lcccc}
     \toprule
-    \textbf{Model} & \textbf{$R^2$} & \textbf{MAE} & \textbf{MAPE} & \textbf{Accuracy} \\
+    \textbf{Model} & \textbf{$R^2$} & \textbf{RMSLE} & \textbf{MAE (stars)} \\
     \midrule
-    Linear Regression  & 0.3917 & 17{,}454 & 27.01\% & 72.99\% \\
-    SVR (RBF, C=15)    & 0.1221 & 1{,}218 & 1.76\% & 63.50\% \\
-    Neural Network     & \textbf{0.4572} & 928 & 0.94\% & \textbf{75.50\%} \\
+    Linear Regression  & 0.4011 & 1.3864 & 32{,}300 \\
+    SVR (RBF, C=15)    & 0.8290 & 0.7408 & 13{,}826 \\
+    Neural Network     & \textbf{0.8489} & \textbf{0.6964} & \textbf{10{,}449} \\
     \bottomrule
   \end{tabular}
   \caption{Model performance on test set. Neural Network achieves best $R^2$ (0.4572) explaining 45.7\% of variance.}
