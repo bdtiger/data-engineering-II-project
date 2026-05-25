@@ -4,11 +4,8 @@ import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 from sklearn.linear_model import LinearRegression
-from sklearn.metrics import (
-    r2_score,
-    mean_absolute_error,
-    mean_absolute_percentage_error
-)
+
+from utils import evaluate_model
 
 FEATURE_COLUMNS = [
     "forks_count",
@@ -26,7 +23,7 @@ FEATURE_COLUMNS = [
 
 TARGET = "stargazers_count"
 
-df = pd.read_csv("../../crawler/repos.csv")
+df = pd.read_csv("github-repository-data.csv")
 
 df["language_encoded"] = pd.factorize(df["language"])[0]
 
@@ -51,30 +48,9 @@ model = LinearRegression()
 
 model.fit(X_train_scaled, y_train)
 
-y_prediction_log = model.predict(X_test_scaled)
-
-r2 = r2_score(y_test, y_prediction_log)
-
-y_prediction_stars = np.expm1(y_prediction_log)
-y_test_stars = np.expm1(y_test)
-
-
-mae = mean_absolute_error(y_test_stars, y_prediction_stars)
-
-mape = mean_absolute_percentage_error(
-    y_test_stars + 1,
-    y_prediction_stars + 1
+evaluate_model(
+    model,
+    X_test_scaled,
+    y_test,
+    model_name="Linear Regression"
 )
-
-accuracy = max(0.0, 1.0 - mape)
-
-print("\n=============================================")
-print("           Linear Regression")
-print("=============================================")
-
-print(f"R²               : {r2:.4f}")
-print(f"MAE (stars)      : {mae:,.0f}")
-print(f"MAPE             : {mape * 100:.2f}%")
-print(f"Accuracy (1-MAPE): {accuracy * 100:.2f}%")
-
-print("=============================================")
