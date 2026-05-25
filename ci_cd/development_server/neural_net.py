@@ -6,7 +6,7 @@ from tensorflow.keras.layers import Dense
 from tensorflow.keras.models import model_from_json
 
 # load the dataset
-dataset = loadtxt('github-repository-data.csv', delimiter=',')
+dataset = loadtxt('pima-indians-diabetes.csv', delimiter=',')
 # split into input (X) and output (y) variables
 X = dataset[:,0:8]
 y = dataset[:,8]
@@ -38,7 +38,7 @@ model_json = model.to_json()
 with open("model.json", "w") as json_file:
     json_file.write(model_json)
 # serialize weights to HDF5
-model.save_weights("model.h5")
+model.save_weights("model.weights.h5")
 print("Saved model to disk")
 
 # load json and create model
@@ -47,7 +47,7 @@ loaded_model_json = json_file.read()
 json_file.close()
 loaded_model = model_from_json(loaded_model_json)
 # load weights into new model
-loaded_model.load_weights("model.h5")
+loaded_model.load_weights("model.weights.h5")
 print("Loaded model from disk")
 
 # make class predictions with the model

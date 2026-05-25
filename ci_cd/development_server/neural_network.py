@@ -24,24 +24,29 @@ TARGET = "stargazers_count"
 
 
 def load_data(filepath):
+    print(f"[1/4] Loading data from '{filepath}'...")
     df = pd.read_csv(filepath)
     df["language_encoded"] = pd.factorize(df["language"])[0]
     df["log_stars"] = np.log1p(df["stargazers_count"])
     X = df[FEATURE_COLUMNS].values
     y = df["log_stars"].values
-    print(X.shape, y.shape)
+    print(f"      Dataset loaded: {len(df)} rows | X shape: {X.shape} | y shape: {y.shape}")
     return X, y
 
 
 def preprocess(X, y):
+    print("[2/4] Preprocessing data...")
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+    print(f"      Train samples: {len(X_train)} | Test samples: {len(X_test)}")
     scaler = StandardScaler()
     X_train_scaled = scaler.fit_transform(X_train)
     X_test_scaled = scaler.transform(X_test)
+    print("      Feature scaling applied (StandardScaler)")
     return X_train_scaled, X_test_scaled, y_train, y_test, scaler
 
 
 def build_model(n_features, output_bias_value):
+    print("[3/4] Building model...")
     output_bias = keras.initializers.Constant(output_bias_value)
     model = Sequential([
         keras.layers.Input(shape=(n_features,)),
@@ -57,10 +62,12 @@ def build_model(n_features, output_bias_value):
         metrics=["mae"]
     )
     model.summary()
+    print("      Model compiled successfully")
     return model
 
 
 def train_model(model, X_train, y_train):
+    print("[4/4] Training model (max 100 epochs, early stopping patience=10)...")
     history = model.fit(
         X_train,
         y_train,
@@ -73,7 +80,20 @@ def train_model(model, X_train, y_train):
             )
         ]
     )
+    epochs_run = len(history.history["loss"])
+    print(f"      Training complete — ran {epochs_run} epoch(s)")
+    print(f"      Final train loss: {history.history['loss'][-1]:.4f} | val loss: {history.history['val_loss'][-1]:.4f}")
     return history
+
+
+def save_model(model, json_path="model.json", weights_path="model.weights.h5"):
+    print(f"Saving model architecture to '{json_path}'...")
+    model_json = model.to_json()
+    with open(json_path, "w") as json_file:
+        json_file.write(model_json)
+    print(f"Saving model weights to '{weights_path}'...")
+    model.save_weights(weights_path)
+    print("Model saved to disk successfully")
 
 
 if __name__ == "__main__":
@@ -81,3 +101,4 @@ if __name__ == "__main__":
     X_train, X_test, y_train, y_test, scaler = preprocess(X, y)
     model = build_model(len(FEATURE_COLUMNS), y_train.mean())
     history = train_model(model, X_train, y_train)
+    save_model(model)

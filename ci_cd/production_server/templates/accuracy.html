@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}Accuracy — Star Predictor{% endblock %}
+
+{% block content %}
+<div class="card">
+  <h1>Model Accuracy</h1>
+  <p class="subtitle">Evaluates mean absolute error (MAE) of the neural network on the full dataset.</p>
+
+  {% if accuracy is not none %}
+    <p class="stat-label">Mean Absolute Error (log-stars)</p>
+    <p class="stat">{{ "%.4f"|format(accuracy) }}</p>
+  {% endif %}
+
+  <form method="POST" style="margin-top: 1.2rem;">
+    <input type="submit" value="{% if accuracy is not none %}Re-run{% else %}Run Evaluation{% endif %}">
+  </form>
+</div>
+{% endblock %}

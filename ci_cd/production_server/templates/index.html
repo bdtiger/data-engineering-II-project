@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}Home — Star Predictor{% endblock %}
+
+{% block content %}
+<div class="card">
+  <h1>Predicting Stargazers in Open Source Projects</h1>
+  <p class="subtitle">Data Engineering II — Project 3 &nbsp;·&nbsp; Group DE-II_5</p>
+  <p>This service uses a neural network trained on GitHub repository metadata to predict the number of stargazers a project will receive.</p>
+</div>
+
+<div class="card">
+  <h2>Available endpoints</h2>
+  <table>
+    <thead>
+      <tr><th>Route</th><th>Description</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><a href="/accuracy">/accuracy</a></td><td>Evaluate model accuracy (MAE on full dataset)</td></tr>
+      <tr><td><a href="/predictions">/predictions</a></td><td>Run predictions and compare against ground truth</td></tr>
+    </tbody>
+  </table>
+</div>
+{% endblock %}

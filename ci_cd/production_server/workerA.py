@@ -1,20 +1,37 @@
 from celery import Celery
 
-from numpy import loadtxt
 import numpy as np
+import pandas as pd
+from sklearn.preprocessing import StandardScaler
 from tensorflow.keras.models import model_from_json
 
 
 model_json_file = './model.json'
-model_weights_file = './model.h5'
-data_file = './pima-indians-diabetes.csv'
+model_weights_file = './model.weights.h5'
+data_file = './github-repository-data.csv'
+
+FEATURE_COLUMNS = [
+    "forks_count",
+    "subscribers_count",
+    "open_issues_count",
+    "size",
+    "network_count",
+    "has_wiki",
+    "has_pages",
+    "has_issues",
+    "topics_count",
+    "age_days",
+    "language_encoded"
+]
 
 def load_data():
-    dataset =  loadtxt(data_file, delimiter=',')
-    X = dataset[:,0:8]
-    y = dataset[:,8]
-    y = list(map(int, y))
-    y = np.asarray(y, dtype=np.uint8)
+    df = pd.read_csv(data_file)
+    df["language_encoded"] = pd.factorize(df["language"])[0]
+    df["log_stars"] = np.log1p(df["stargazers_count"])
+    X = df[FEATURE_COLUMNS].values
+    y = df["log_stars"].values
+    scaler = StandardScaler()
+    X = scaler.fit_transform(X)
     return X, y
 
 def load_model():
@@ -40,26 +57,20 @@ def add_nums(a, b):
 
 @celery.task
 def get_predictions():
-    results ={}
+    results = {}
     X, y = load_data()
     loaded_model = load_model()
-    predictions = np.round(loaded_model.predict(X)).flatten().astype(np.int32)
-    results['y'] = y.tolist()
+    log_predictions = loaded_model.predict(X).flatten()
+    predictions = np.expm1(log_predictions)  # convert from log space back to star counts
+    results['y'] = np.expm1(y).astype(int).tolist()
     results['predicted'] = predictions.tolist()
-    #print ('results[y]:', results['y'])
-    # for i in range(len(results['y'])):
-        #print('%s => %d (expected %d)' % (X[i].tolist(), predictions[i], y[i]))
-        # results['predicted'].append(predictions[i].tolist()[0])
-    #print ('results:', results)
     return results
 
 @celery.task
 def get_accuracy():
     X, y = load_data()
     loaded_model = load_model()
-    loaded_model.compile(loss='binary_crossentropy', optimizer='rmsprop', metrics=['accuracy'])
-
+    loaded_model.compile(loss='mse', optimizer='adam', metrics=['mae'])
     score = loaded_model.evaluate(X, y, verbose=0)
-    #print("%s: %.2f%%" % (loaded_model.metrics_names[1], score[1]*100))
-    return score[1]*100
+    return score[1]  # MAE
 

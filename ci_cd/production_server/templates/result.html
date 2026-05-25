@@ -1,27 +1,45 @@
-<!DOCTYPE html>
-<html>
-<head>
-<title>Test App</title>
-</head>
-<body>
+{% extends "base.html" %}
+{% block title %}Predictions — Star Predictor{% endblock %}
 
-<h1>Accuracy is {{accuracy}}</h1>
-<table BORDER=1>
-<thead>
-<tr>
-<th>True</th><th>Predicted</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-{% for val in range(7) %}
+{% block content %}
+<div class="card">
+  <h1>Prediction Results</h1>
+  <p class="subtitle">Neural network predictions vs. actual stargazer counts.</p>
 
-<td>{{final_results['y'][val]}}</td><td>{{final_results['predicted'][val]}}</td> 
-</tr>
-{% endfor %}
-</tbody>
-</table>
+  <p class="stat-label">Model MAE (log-stars)</p>
+  <p class="stat">{{ "%.4f"|format(accuracy) }}</p>
+</div>
 
+<div class="card">
+  <h2>Sample Predictions</h2>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Actual Stars</th>
+          <th>Predicted Stars</th>
+          <th>Difference</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for i in range([final_results['y']|length, 50]|min) %}
+        <tr>
+          <td>{{ i + 1 }}</td>
+          <td>{{ final_results['y'][i] }}</td>
+          <td>{{ final_results['predicted'][i]|round|int }}</td>
+          <td>{{ (final_results['predicted'][i] - final_results['y'][i])|round|int }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  <p style="margin-top:0.8rem; font-size:0.82rem; color:#888;">
+    Showing first {{ [final_results['y']|length, 50]|min }} of {{ final_results['y']|length }} rows.
+  </p>
+</div>
 
-</body>
-</html>
+<form method="POST">
+  <input type="submit" value="Re-run Predictions">
+</form>
+{% endblock %}

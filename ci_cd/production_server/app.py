@@ -3,45 +3,36 @@ from workerA import add_nums, get_accuracy, get_predictions
 from flask import (
    Flask,
    request,
-   jsonify,
-   Markup,
-   render_template 
+   render_template
 )
 
-#app = Flask(__name__, template_folder='./templates',static_folder='./static')
 app = Flask(__name__)
 
 @app.route("/")
 def index():
-    return '<h1>Welcome to the Machine Learning Course.</h1>'
+    return render_template('index.html', active='home')
 
 @app.route("/accuracy", methods=['POST', 'GET'])
 def accuracy():
+    score = None
     if request.method == 'POST':
         r = get_accuracy.delay()
-        a = r.get()
-        return '<h1>The accuracy is {}</h1>'.format(a)
-
-    return '''<form method="POST">
-    <input type="submit">
-    </form>'''
+        score = r.get()
+    return render_template('accuracy.html', active='accuracy', accuracy=score)
 
 @app.route("/predictions", methods=['POST', 'GET'])
 def predictions():
     if request.method == 'POST':
         results = get_predictions.delay()
-        predictions = results.get()
+        final_results = results.get()
 
-        results = get_accuracy.delay()
-        accuracy = results.get()
-        
-        final_results = predictions
+        r = get_accuracy.delay()
+        accuracy = r.get()
 
-        return render_template('result.html', accuracy=accuracy ,final_results=final_results) 
-                    
-    return '''<form method="POST">
-    <input type="submit">
-    </form>'''
+        return render_template('result.html', active='predictions',
+                               accuracy=accuracy, final_results=final_results)
+
+    return render_template('predictions.html', active='predictions')
 
 if __name__ == '__main__':
-    app.run(host = '0.0.0.0',port=5100,debug=True)
+    app.run(host='0.0.0.0', port=5100, debug=True)
