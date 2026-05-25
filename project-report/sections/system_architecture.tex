@@ -2,7 +2,7 @@
 
 \begin{figure}[h]
   \centering
-  \includegraphics[width=0.95\linewidth]{figures/diagram3_combined_system_architecture.jpg}
+  \includegraphics[width=0.95\linewidth]{figures/diagram3_combined_system_architecture_new.png}
   \caption{Distributed ML system: Data collection and training on Dev VM, deployment via Git Hook, serving on Prod VM with Flask + Celery + RabbitMQ.}
   \label{fig:combined}
 \end{figure}
@@ -17,7 +17,7 @@ Three models train on 80/20 split: (1) Linear Regression baseline, (2) SVR with 
 
 \subsection{Deployment and Production Serving}
 
-Phase 4 deploys via Git Hook: trained model architecture (model.json) and weights (model.weights.h5) transfer via SCP to Prod VM, triggering Docker container restart. This approach provides version-controlled model management with zero-downtime updates. Phase 5 runs three Docker services: Flask API (port 5100, endpoints /accuracy and /predictions), RabbitMQ broker (AMQP port 5672, management UI port 15672), and Celery worker. The worker loads the trained TensorFlow model into memory for fast inference:
+Phase 4 deploys via Git Hook: trained model architecture (model.json) and weights (model.weights.h5) transfer via SCP to Prod VM, triggering Docker container restart. This approach provides version-controlled model management and automated model updates. Since the Docker containers are restarted during deployment, a short service interruption may occur unless rolling deployment or multiple replicas are used. Phase 5 runs three Docker services: Flask API (port 5100, endpoints /accuracy and /predictions), RabbitMQ broker (AMQP port 5672, management UI port 15672), and Celery worker. The worker loads the trained TensorFlow model into memory for fast inference:
 \begin{itemize}
   \item \textbf{get\_predictions()}: Batch inference on all 2{,}000 repositories, returns predicted vs actual stars with repository names
   \item \textbf{get\_accuracy()}: Model evaluation returning MAE metric on full dataset
