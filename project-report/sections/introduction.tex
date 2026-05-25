@@ -1,8 +1,6 @@
 \section{Introduction}
 
-GitHub star counts indicate open-source project popularity and adoption potential~\cite{borges2016}. Predicting stars from repository metadata has practical applications for developers and researchers. This project investigates which regression model best predicts stargazers from repository features like forks, subscribers, issues, and age.
+GitHub star counts indicate repository popularity and adoption potential~\cite{borges2016}. This project predicts stargazers from 11 engineered repository features using machine learning on 1{,}000 GitHub repositories ($\geq 50$ stars).
 
-We collected 1{,}000 repositories ($\geq 50$ stars) via GitHub API, engineered 11 features, and trained three models: Linear Regression, SVR (RBF), and Deep Neural Network. The Neural Network achieved the best performance ($R^2=0.4572$) and was deployed to production via automated Git Hook CI/CD.
-
-The system spans two OpenStack VMs: Dev VM for data collection and training, Prod VM for serving predictions via Flask + Celery. This report details the methodology, model comparison, and production deployment architecture.
+We trained three regression models: Linear Regression, SVR (RBF), and Deep Neural Network (3-layer). The Neural Network achieved best performance ($R^2=0.8489$, MAE=10{,}449 stars) and was deployed to production via Git Hook CI/CD. The system spans two OpenStack VMs: Dev (training), Prod (serving via Flask + Celery). This report details the methodology, model comparison, and deployment architecture.
 

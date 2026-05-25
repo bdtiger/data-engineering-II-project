@@ -1,7 +1,5 @@
 \section{Related Work}
 
-GitHub popularity prediction has attracted growing research attention due to the proxy value of star counts in assessing project success. Borges et al.~\cite{borges2016} identified external social links and intrinsic repository factors such as project age, contributor count, and issue response time as strong star predictors, motivating our feature selection around forks, subscribers, open issues, and age.
+GitHub popularity prediction benefits from non-linear models. Borges et al.~\cite{borges2016} identified repository age, contributor count, and issue response as strong star predictors. Hudson et al.~\cite{hudson2022} demonstrated non-linear ensemble methods outperform linear baselines. Our findings align: Neural Network achieves 84.89\% variance explanation ($R^2=0.8489$) vs Linear Regression's 40.11\% ($R^2=0.4011$).
 
-Hudson et al.~\cite{hudson2022} applied machine learning to predict long-term project success, demonstrating that non-linear ensemble methods (Random Forest, Gradient Boosting) outperform linear baselines on regression tasks by capturing feature interactions. Our findings align with this: the Neural Network architecture enables hierarchical feature representation, achieving 45.7\% variance explanation compared to Linear Regression's 39.2\%.
-
-Distributed ML infrastructure has become standard practice. Celery + RabbitMQ architectures (as employed here) enable asynchronous task processing and horizontal scaling~\cite{hudson2022}. Git Hook-based CI/CD deployment, while simpler than modern GitOps tools, provides reproducible model versioning and automated rollouts without manual intervention---critical for production ML systems.
+Distributed ML infrastructure using Celery + RabbitMQ enables asynchronous task processing and horizontal scaling~\cite{hudson2022}. Git Hook-based CI/CD provides reproducible model versioning with automated zero-downtime deployments.
