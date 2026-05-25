@@ -1,3 +1,4 @@
+import time
 import numpy as np
 import pandas as pd
 from tensorflow.keras import Sequential
@@ -68,6 +69,7 @@ def build_model(n_features, output_bias_value):
 
 def train_model(model, X_train, y_train):
     print("[4/4] Training model (max 100 epochs, early stopping patience=10)...")
+    t0 = time.perf_counter()
     history = model.fit(
         X_train,
         y_train,
@@ -80,10 +82,20 @@ def train_model(model, X_train, y_train):
             )
         ]
     )
+    elapsed = time.perf_counter() - t0
     epochs_run = len(history.history["loss"])
-    print(f"      Training complete — ran {epochs_run} epoch(s)")
+    print(f"      Training complete — ran {epochs_run} epoch(s) in {elapsed:.2f}s")
     print(f"      Final train loss: {history.history['loss'][-1]:.4f} | val loss: {history.history['val_loss'][-1]:.4f}")
-    return history
+    return history, elapsed
+
+
+def save_timing_result(elapsed, epochs, num_vms=1, results_path="scalability_results.csv"):
+    """Append a timing result row to a CSV for cross-VM scalability comparison."""
+    import os
+    row = pd.DataFrame([{"num_vms": num_vms, "training_time_s": round(elapsed, 4), "epochs": epochs}])
+    write_header = not os.path.exists(results_path)
+    row.to_csv(results_path, mode='a', header=write_header, index=False)
+    print(f"[Timing] Result saved to '{results_path}' (num_vms={num_vms}, time={elapsed:.2f}s, epochs={epochs})")
 
 
 def save_model(model, json_path="model.json", weights_path="model.weights.h5"):
@@ -100,5 +112,9 @@ if __name__ == "__main__":
     X, y = load_data("github-repository-data.csv")
     X_train, X_test, y_train, y_test, scaler = preprocess(X, y)
     model = build_model(len(FEATURE_COLUMNS), y_train.mean())
-    history = train_model(model, X_train, y_train)
+    history, training_time = train_model(model, X_train, y_train)
+    print(f"\nTotal training time: {training_time:.2f}s")
     save_model(model)
+
+    epochs_run = len(history.history["loss"])
+    save_timing_result(training_time, epochs_run, num_vms=1)
