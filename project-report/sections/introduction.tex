@@ -1,7 +1,8 @@
 \section{Introduction}
 
-GitHub star counts serve as a proxy for open-source project popularity, influencing visibility and adoption~\cite{borges2016}. Predicting stars from repository activity metrics has practical value for developers and researchers, though the relationship between features---fork counts, issues, age---and star accumulation is inherently non-linear.
+GitHub star counts indicate open-source project popularity and adoption potential~\cite{borges2016}. Predicting stars from repository metadata has practical applications for developers and researchers. This project investigates which regression model best predicts stargazers from repository features like forks, subscribers, issues, and age.
 
-This project investigates which machine learning regression model best predicts GitHub stargazers. We collected 1{,}000 repositories with $\geq 50$ stars via the GitHub API, extracted 14 activity-based features, and trained five regression models: Linear Regression, Ridge Regression, Random Forest, Gradient Boosting, and SVR. The best-performing model was deployed to production via an automated Git Hook CI/CD pipeline.
+We collected 1{,}000 repositories ($\geq 50$ stars) via GitHub API, engineered 11 features, and trained three models: Linear Regression, SVR (RBF), and Deep Neural Network. The Neural Network achieved the best performance ($R^2=0.4572$) and was deployed to production via automated Git Hook CI/CD.
 
-The end-to-end system spans two OpenStack VMs configured with Ansible, data collection, model training, and production serving via Flask and Celery. This report details the architecture, comparative model results, and scalability analysis.
+The system spans two OpenStack VMs: Dev VM for data collection and training, Prod VM for serving predictions via Flask + Celery. This report details the methodology, model comparison, and production deployment architecture.
+

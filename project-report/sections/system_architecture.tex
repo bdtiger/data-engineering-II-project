@@ -1,48 +1,28 @@
 \section{System Architecture}
 
-The system comprises two interconnected pipelines: (1)~data collection via GitHub API and (2)~model training and production deployment. Infrastructure consists of a Client VM (Ansible controller), a Dev VM (training), and a Prod VM (serving). All components run in Docker containers orchestrated with Docker Compose.
-
-\subsection{Data Collection and Feature Engineering}
-
-The data collection script queries the GitHub Search API for repositories with $\geq 50$ stars, collecting 1{,}000 repositories sorted by star count. A two-second delay between requests ensures API rate-limit compliance. For each repository, 14 features are extracted (Table~\ref{tab:features}). Star counts are log-transformed ($\log(1 + \text{stars})$) to stabilize variance across the wide distribution in the dataset.
-
-\begin{table}[h]
-  \centering
-  \small
-  \begin{tabular}{ll}
-    \toprule
-    \textbf{Feature} & \textbf{Description} \\
-    \midrule
-    \texttt{forks}, \texttt{watchers}, \texttt{open\_issues} & Activity metrics \\
-    \texttt{size\_kb}, \texttt{age\_days}, \texttt{days\_since\_push} & Repository properties \\
-    \texttt{has\_wiki}, \texttt{has\_projects}, \texttt{has\_downloads} & Binary features \\
-    \texttt{is\_fork}, \texttt{topics\_count}, \texttt{network\_count} & Repository type \& metadata \\
-    \texttt{subscribers\_count}, \texttt{language\_enc} & Community engagement \\
-    \bottomrule
-  \end{tabular}
-  \caption{14 features extracted from the GitHub API.}
-  \label{tab:features}
-\end{table}
-
-\subsection{Model Training and Deployment}
-
-Five regression models are trained on the Dev VM using an 80/20 train--test split: Linear Regression, Ridge Regression ($\alpha = 1.0$), Random Forest (200 estimators), Gradient Boosting (200 estimators), and SVR (RBF kernel). Each model is wrapped in a scikit-learn Pipeline with StandardScaler preprocessing. Models are evaluated on $R^2$ over the held-out test set.
-
-Deployment is automated via a Git Hook on the Dev VM: after training, \texttt{best\_model.pkl} is committed and pushed to a bare repository, triggering a \texttt{post-receive} hook that (1)~securely copies the model to Prod via SCP and (2)~restarts Docker containers. This eliminates manual deployment steps.
-
-On Prod, the Flask application exposes a \texttt{/predict} endpoint accepting JSON feature vectors. Prediction tasks are dispatched asynchronously to Celery workers backed by Redis, allowing concurrent request handling without blocking.
-
-\subsection{System Overview}
-
 \begin{figure}[h]
   \centering
   \includegraphics[width=0.95\linewidth]{figures/diagram3_combined_system_architecture.jpg}
-  \caption{Complete system architecture spanning all VMs: data collection on Dev, training and Git Hook CI/CD, and production serving on Prod with asynchronous Celery workers.}
+  \caption{Complete distributed ML system: Client provisioning, Dev data collection and training, automated Git Hook deployment, Prod Flask API with Celery workers and RabbitMQ.}
   \label{fig:combined}
 \end{figure}
 
-Figure~\ref{fig:combined} presents the end-to-end architecture. The Client VM provisions
-and configures all infrastructure. The Dev VM handles data-intensive work and model
-development. The Prod VM exposes the prediction service to end users. The Git Hook
-bridges the two application VMs, making the entire CI/CD cycle reproducible with a
-single command.
+The architecture spans three interconnected OpenStack VMs: Client (Ansible orchestration), Dev (training), and Prod (serving).
+
+\subsection{Infrastructure Provisioning and Configuration}
+
+Phase 1 provisions Dev and Prod VMs via \texttt{start\_dev\_prod\_instances.py} using Ubuntu 22.04 and ssc.medium flavor. Phase 2 automates configuration via Ansible playbook: Dev VM receives Python dependencies (scikit-learn, TensorFlow, pandas); Prod VM receives Docker, RabbitMQ container, and Flask dependencies. SSH key pairs enable Dev-to-Prod automation.
+
+\subsection{Data Collection and Model Training}
+
+The GitHub API crawler queries repositories with $\geq 50$ stars, extracting 1,000 repositories with 11 features: forks, subscribers, open issues, size, network count, documentation flags (wiki, pages, issues), topics, age, and language encoding. Features are preprocessed via StandardScaler ($\mu=0$, $\sigma=1$), and target is log-transformed using $\log(1+\text{stars})$.
+
+Three regression models are trained on 80/20 split: (1) Linear Regression (baseline), (2) SVR (RBF kernel, $C=15$, $\varepsilon=0.1$), and (3) Neural Network (3-layer: 64-32-1 neurons with ReLU, 0.2 dropout, Adam optimizer, MSE loss, 100 epochs with early stopping).
+
+\subsection{Automated Git Hook Deployment (Phase 4)}
+
+Dev VM hosts a bare Git repository with a post-receive hook that triggers on \texttt{git push}. The hook executes: (1) SCP model files (\texttt{model.h5}, \texttt{model.json}) to Prod VM, and (2) SSH command to restart Docker containers. Pre-configured SSH keys with StrictHostKeyChecking disabled enable keyless automation. This eliminates manual model transfers and provides version-controlled deployment.
+
+\subsection{Production Serving and Scalability}
+
+Prod VM runs Docker Compose with three services: Flask API (port 5100, endpoints: \texttt{/accuracy}, \texttt{/predictions}), RabbitMQ broker, and Celery worker. The worker loads the trained TensorFlow model and executes async prediction tasks from the RabbitMQ queue. Flask API remains responsive by dispatching inference to Celery via \texttt{get\_predictions.delay()}, decoupling request handling from computation. Horizontal scaling is achieved by increasing worker replicas: \texttt{docker compose up -d --scale worker\_1=N}. Each worker independently processes tasks, enabling parallel inference without blocking the API.
