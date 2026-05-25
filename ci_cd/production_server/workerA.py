@@ -30,9 +30,10 @@ def load_data():
     df["log_stars"] = np.log1p(df["stargazers_count"])
     X = df[FEATURE_COLUMNS].values
     y = df["log_stars"].values
+    names = df["full_name"].tolist()
     scaler = StandardScaler()
     X = scaler.fit_transform(X)
-    return X, y
+    return X, y, names
 
 def load_model():
     # load json and create model
@@ -58,17 +59,18 @@ def add_nums(a, b):
 @celery.task
 def get_predictions():
     results = {}
-    X, y = load_data()
+    X, y, names = load_data()
     loaded_model = load_model()
     log_predictions = loaded_model.predict(X).flatten()
     predictions = np.expm1(log_predictions)  # convert from log space back to star counts
     results['y'] = np.expm1(y).astype(int).tolist()
     results['predicted'] = predictions.tolist()
+    results['names'] = names
     return results
 
 @celery.task
 def get_accuracy():
-    X, y = load_data()
+    X, y, _ = load_data()
     loaded_model = load_model()
     loaded_model.compile(loss='mse', optimizer='adam', metrics=['mae'])
     score = loaded_model.evaluate(X, y, verbose=0)

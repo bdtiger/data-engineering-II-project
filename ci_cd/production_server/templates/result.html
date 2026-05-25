@@ -17,6 +17,7 @@
       <thead>
         <tr>
           <th>#</th>
+          <th>Repository</th>
           <th>Actual Stars</th>
           <th>Predicted Stars</th>
           <th>Difference</th>
@@ -26,6 +27,7 @@
         {% for i in range([final_results['y']|length, 50]|min) %}
         <tr>
           <td>{{ i + 1 }}</td>
+          <td>{{ final_results['names'][i] if final_results['names'] is defined else '—' }}</td>
           <td>{{ final_results['y'][i] }}</td>
           <td>{{ final_results['predicted'][i]|round|int }}</td>
           <td>{{ (final_results['predicted'][i] - final_results['y'][i])|round|int }}</td>
