@@ -184,24 +184,23 @@ This script:
 - Searches for repos with 50+ stars
 - Collects up to 1000 repos
 - Extracts features: stars, forks, issues, size, language, creation date, etc.
-- Saves to `crawler/repos.csv`
+- Saves to `ci_cd/development_server/github-repository-data.csv`
 
 ### 3.2 Train the TensorFlow Model
 
 ```bash
 # Move dataset to development directory
-cp crawler/repos.csv ci_cd/development_server/github-repository-data.csv
 cd ci_cd/development_server/
 
 # Train neural network model
-python3 neural_net.py
+python3 neural_network.py
 ```
 
 This script:
 - Loads dataset from `github-repository-data.csv`
 - Creates a 3-layer neural network (16-8-1 neurons)
 - Trains for 250 epochs with batch size 10
-- Saves model to `model.h5` and `model.json`
+- Saves model to `model.weights.h5` and `model.json`
 - Prints accuracy metrics
 
 **Model Architecture:**

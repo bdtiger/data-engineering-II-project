@@ -59,6 +59,9 @@
        - scikit-learn
        - joblib
        - numpy
+       - celery
+       - amqp
+       - tensorflow
       executable: pip3
 
    - name: Create working git staging repo on dev
