@@ -1,12 +1,12 @@
-# Data Engineering II — Distributed ML Pipeline for Diabetes Prediction
+# Data Engineering II — Distributed ML Pipeline for GitHub Star Prediction
 
 A production-grade distributed machine learning system demonstrating end-to-end ML infrastructure using Python, TensorFlow, Docker, Celery, and cloud deployment on OpenStack.
 
 ## 🎯 Project Overview
 
-This project implements a **distributed diabetes prediction pipeline** that:
-- Collects GitHub repository features via GitHub API
-- Trains a 3-layer neural network using TensorFlow/Keras
+This project implements a **distributed GitHub repository star count prediction pipeline** that:
+- Collects GitHub repository features from 2000+ repositories via GitHub API
+- Trains a neural network using TensorFlow/Keras for regression
 - Deploys the model as a production REST API with async workers
 - Uses Celery + RabbitMQ for distributed task processing
 - Demonstrates cloud infrastructure automation with Ansible and OpenStack
@@ -28,7 +28,7 @@ This project implements a **distributed diabetes prediction pipeline** that:
 
 | Component | Technology | Purpose |
 |-----------|-----------|---------|
-| **ML Framework** | TensorFlow/Keras | Binary classification model (diabetes prediction) |
+| **ML Framework** | TensorFlow/Keras | Regression model (GitHub star prediction) |
 | **Task Queue** | Celery + RabbitMQ | Async job distribution and management |
 | **Web Framework** | Flask | REST API endpoints for predictions |
 | **Containerization** | Docker | Production deployment isolation |
@@ -47,9 +47,9 @@ data-engineering-II-project/
 │
 ├── ci_cd/
 │   ├── development_server/          # Model Training
-│   │   ├── neural_net.py           # TensorFlow training script
+│   │   ├── neural_network.py       # TensorFlow training script
 │   │   ├── github-repository-data.csv
-│   │   ├── model.h5                # Trained weights
+│   │   ├── model.weights.h5        # Trained weights
 │   │   └── model.json              # Model architecture
 │   │
 │   └── production_server/           # Production Deployment
@@ -132,7 +132,7 @@ python3 crawler/github_crawler.py
 # Train model
 cp crawler/repos.csv ci_cd/development_server/github-repository-data.csv
 cd ci_cd/development_server/
-python3 neural_net.py
+python3 neural_network.py
 ```
 
 ### Step 4: Deploy to Production via Git Hook
@@ -153,8 +153,13 @@ cat > /opt/model_repo.git/hooks/post-receive << 'HOOK'
 PROD_IP="<PROD_IP>"
 scp -i /home/appuser/.ssh/id_rsa \
     -o StrictHostKeyChecking=no \
-    /data-engineering-II-project/ci_cd/development_server/model.h5 \
-    appuser@${PROD_IP}:/data-engineering-II-project/ci_cd/production_server/model.h5
+    /data-engineering-II-project/ci_cd/development_server/model.weights.h5 \
+    appuser@${PROD_IP}:/data-engineering-II-project/ci_cd/production_server/model.weights.h5
+
+scp -i /home/appuser/.ssh/id_rsa \
+    -o StrictHostKeyChecking=no \
+    /data-engineering-II-project/ci_cd/development_server/model.json \
+    appuser@${PROD_IP}:/data-engineering-II-project/ci_cd/production_server/model.json
 
 ssh -i /home/appuser/.ssh/id_rsa \
     -o StrictHostKeyChecking=no \
@@ -168,7 +173,7 @@ cd /data-engineering-II-project
 git remote add deployment /opt/model_repo.git
 
 # Deploy model (hook triggers automatically)
-git add ci_cd/development_server/model.h5 ci_cd/development_server/model.json
+git add ci_cd/development_server/model.weights.h5 ci_cd/development_server/model.json
 git commit -m "deploy: trained model"
 git push deployment main
 ```
@@ -187,28 +192,29 @@ curl -X POST http://<PROD_IP>:5100/accuracy
 ## 📊 Model Details
 
 ### Training Dataset
-- **Source**: Pima Indians Diabetes Dataset
-- **Samples**: Variable (up to 1000 from GitHub repos)
-- **Features**: 8 numerical attributes
-- **Target**: Binary classification (diabetes: yes/no)
+- **Source**: GitHub API crawler (top repositories by stars)
+- **Samples**: 2000 repositories with ≥50 stars
+- **Features**: 11 selected features (from 15 raw attributes)
+- **Target**: Regression on log-transformed star count
 
 ### Neural Network Architecture
 ```
-Input (8 features)
+Input (11 features)
     ↓
-Dense(16, relu) + Dropout
+Dense(64, relu) + Dropout(0.2)
     ↓
-Dense(8, relu)
+Dense(32, relu) + Dropout(0.2)
     ↓
-Dense(1, sigmoid)  ← Binary output
+Dense(1) ← Linear regression output
 ```
 
 ### Training Configuration
-- **Loss**: Binary crossentropy
-- **Optimizer**: Adam
-- **Epochs**: 250
-- **Batch Size**: 10
-- **Validation**: Accuracy metric
+- **Loss**: Mean Squared Error (MSE)
+- **Optimizer**: Adam (learning_rate=0.001)
+- **Epochs**: 100 (with early stopping at ~90 epochs)
+- **Batch Size**: 32
+- **Validation**: 10% of training data
+- **Metric**: Mean Absolute Error (MAE)
 
 ## 🐳 Production Stack
 
@@ -316,7 +322,7 @@ print(f"Accuracy: {accuracy:.2f}%")
 ### Local Testing
 ```bash
 # Test neural network locally
-python3 ci_cd/development_server/neural_net.py
+python3 ci_cd/development_server/neural_network.py
 
 # Test API locally (before cloud deployment)
 python3 ci_cd/production_server/app.py
@@ -339,7 +345,7 @@ git push deployment main
 ```
 
 The **post-receive hook** handles:
-- Copying trained model (`model.h5`) to Prod VM via SCP
+- Copying trained model files (`model.weights.h5` and `model.json`) to Prod VM via SCP
 - Restarting Celery workers automatically
 - No manual intervention needed after git push
 
