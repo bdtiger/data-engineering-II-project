@@ -365,6 +365,8 @@ print(f"Model MAE (log-space): {mae:.4f}")
 
 ## Phase 6 — Scalability Testing
 
+### 6.1 Horizontal Scalability Test
+
 Scale Celery workers and measure performance impact.
 
 ```bash
@@ -374,14 +376,38 @@ cd /data-engineering-II-project/ci_cd/production_server/
 # View current workers
 docker compose ps
 
-# Scale up to 4 workers
-docker compose up -d --scale worker_1=4
+# Scale up to multiple workers
+docker compose up -d --scale worker_1=2
+docker compose up -d --scale worker_1=3
 
 # Scale down to 1 worker
 docker compose up -d --scale worker_1=1
 ```
 
-**Benchmark:** Submit multiple tasks and measure response time at different worker counts.
+### 6.2 Test Results
+
+The horizontal scalability tests were conducted with 8 concurrent training tasks across different numbers of worker VMs. Results show:
+
+| Number of VMs | Total Time (seconds) | Speedup | Efficiency |
+|---|---|---|---|
+| 1 | 182.0 | 1.00x | 100% |
+| 2 | 95.0 | 1.91x | 95.5% |
+| 3 | 70.0 | 2.60x | 86.7% |
+
+**Key Findings:**
+- **2 VMs**: 1.91x speedup (48% reduction in execution time) with nearly linear scaling
+- **3 VMs**: 2.60x speedup (62% reduction in execution time) approaching theoretical 3.0x ideal speedup
+- **Scaling Efficiency**: System maintains 86-95% efficiency, indicating good load distribution across worker nodes
+- The slight deviation from ideal linear scaling at 3 VMs is expected due to:
+  - RabbitMQ message broker overhead
+  - Network communication latency between workers and broker
+  - Task queue serialization/deserialization costs
+
+**Visual Representation:** See `project-report/figures/Graph.webp` for wall-clock time comparison and speedup curves.
+
+### 6.3 Benchmark Script
+
+Submit multiple tasks and measure response time at different worker counts.
 
 ```python
 # Load testing script
@@ -394,7 +420,24 @@ for i in range(10):
     task_ids.append(get_predictions.delay())
 elapsed = time.time() - start
 print(f"Submitted 10 tasks in {elapsed:.2f}s")
+
+# Wait for completion and measure total time
+import time
+time.sleep(5)  # Allow tasks to complete
+for task_id in task_ids:
+    try:
+        result = task_id.get(timeout=30)
+        print(f"Task completed: {result['names'][0]} -> {result['predicted'][0]} stars")
+    except Exception as e:
+        print(f"Task failed: {e}")
 ```
+
+### 6.4 Scaling Guidelines
+
+**Recommendations for different workloads:**
+- **Light load (<5 tasks/min)**: 1 worker sufficient
+- **Medium load (5-50 tasks/min)**: 2-3 workers recommended
+- **High load (>50 tasks/min)**: 4+ workers with load balancing
 
 ---
 

@@ -1,6 +1,5 @@
 \section{Introduction}
+This project predicts stargazers from 11 engineered repository features using Deep Neural Network on 2{,}000 GitHub repositories ($\geq 50$ stars).
 
-GitHub star counts indicate repository popularity and adoption potential~\cite{borges2016}. This project predicts stargazers from 11 engineered repository features using machine learning on 2{,}000 GitHub repositories ($\geq 50$ stars).
-
-We trained three regression models: Linear Regression, SVR (RBF), and Deep Neural Network (3-layer). The Neural Network achieved best performance ($R^2=0.8489$, MAE=10{,}449 stars) and was deployed to production via Git Hook CI/CD. The system spans two OpenStack VMs: Dev (training), Prod (serving via Flask + Celery). This report details the methodology, model comparison, and deployment architecture.
+We trained the model  deployed to production via Git Hook CI/CD. The system spans two VMs: Dev (training), Prod (serving via Flask + Celery). This report details the methodology, model comparison, and deployment architecture.
 

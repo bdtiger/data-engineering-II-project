@@ -254,19 +254,91 @@ Task executor (configurable instances)
 
 ## 📈 Scalability Testing
 
-Scale Celery workers and measure throughput:
+Horizontal scalability testing was conducted with 8 concurrent training tasks across 1, 2, and 3 worker VMs. The results demonstrate the system's ability to scale efficiently with additional computational resources.
 
-```bash
-# Scale to 4 workers
-docker compose up -d --scale worker_1=4
+### Performance Results
 
-# Scale back to 1
-docker compose up -d --scale worker_1=1
+| Number of Worker VMs | Total Execution Time | Speedup | Efficiency |
+|---|---|---|---|
+| 1 | 182.0 seconds | 1.00x | 100% |
+| 2 | 95.0 seconds | 1.91x | 95.5% |
+| 3 | 70.0 seconds | 2.60x | 86.7% |
+
+### Key Observations
+
+✅ **Excellent Linear Scaling**: The system achieves 1.91x speedup with 2 VMs, nearly reaching the theoretical 2.0x ideal speedup  
+✅ **Good 3-VM Performance**: 2.60x speedup with 3 VMs demonstrates continued scalability  
+✅ **Scaling Efficiency**: Maintains 86-95% efficiency, indicating minimal overhead from message broker communication  
+✅ **Load Distribution**: RabbitMQ successfully distributes tasks across worker nodes with balanced queue processing
+
+### Scaling Architecture
+
+```
+┌─────────────────────────────┐
+│    Flask Web (Port 5100)    │
+│    Task Dispatcher          │
+└────────────────┬────────────┘
+                 │ HTTP Request
+                 ▼
+        ┌─────────────────┐
+        │  RabbitMQ Queue │
+        │  (Port 5672)    │
+        └────┬────┬────┬──┘
+             │    │    │ Task Distribution
+             ▼    ▼    ▼
+        ┌────────────────────┐
+        │  Worker Pool       │
+        │ ┌──┐ ┌──┐ ┌──┐    │
+        │ │W1│ │W2│ │W3│    │
+        │ └──┘ └──┘ └──┘    │
+        │ (Scale horizontally) │
+        └────────────────────┘
 ```
 
-Compare metrics:
-- **Baseline (1 worker)**: Baseline throughput
-- **Scaled (4 workers)**: Improved throughput and reduced latency
+### Benchmark Instructions
+
+```bash
+# Scale to different worker counts
+docker compose up -d --scale worker_1=1  # Single worker baseline
+docker compose up -d --scale worker_1=2  # Two workers
+docker compose up -d --scale worker_1=3  # Three workers
+
+# Load test script
+python3 << 'EOF'
+from workerA import get_predictions
+import time
+
+# Submit 8 tasks concurrently
+task_ids = []
+start = time.time()
+for i in range(8):
+    task_ids.append(get_predictions.delay())
+    print(f"Submitted task {i+1}")
+
+submit_time = time.time() - start
+print(f"\nSubmitted 8 tasks in {submit_time:.2f}s")
+
+# Wait for all tasks to complete
+results = []
+for i, task_id in enumerate(task_ids):
+    result = task_id.get(timeout=60)
+    results.append(result)
+    print(f"Task {i+1} completed")
+
+total_time = time.time() - start
+print(f"\nTotal execution time: {total_time:.2f}s")
+print(f"Average task time: {total_time / len(task_ids):.2f}s")
+EOF
+```
+
+### Visualization
+
+The complete scaling analysis including wall-clock time and speedup curves is available in:  
+📊 **`project-report/figures/Graph.webp`**
+
+This graph displays:
+- **Left Chart**: Wall-clock time for 8 training tasks across 1-3 VMs (182s → 95s → 70s)
+- **Right Chart**: Speedup comparison between ideal linear scaling and measured speedup (1.91x at 2 VMs, 2.60x at 3 VMs)
 
 ## 🔧 Celery Task Examples
 
