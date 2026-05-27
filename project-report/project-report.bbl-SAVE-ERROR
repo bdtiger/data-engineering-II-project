@@ -1,0 +1,210 @@
+% $ biblatex auxiliary file $
+% $ biblatex bbl format version 3.3 $
+% Do not modify the above lines!
+%
+% This is an auxiliary file used by the 'biblatex' package.
+% This file may safely be deleted. It will be recreated by
+% biber as required.
+%
+\begingroup
+\makeatletter
+\@ifundefined{ver@biblatex.sty}
+  {\@latex@error
+     {Missing 'biblatex' package}
+     {The bibliography requires the 'biblatex' package.}
+      \aftergroup\endinput}
+  {}
+\endgroup
+
+
+\refsection{0}
+  \datalist[entry]{nyt/global//global/global/global}
+    \entry{armstrong2015}{article}{}{}
+      \true{moreauthor}
+      \true{morelabelname}
+      \name{author}{1}{}{%
+        {{hash=5cf5063524761f22c2df09cab87f23f8}{%
+           family={Armstrong},
+           familyi={A\bibinitperiod},
+           given={D.},
+           giveni={D\bibinitperiod}}}%
+      }
+      \strng{namehash}{c3cf5c210dd292a6d9d9eab9385ae225}
+      \strng{fullhash}{c3cf5c210dd292a6d9d9eab9385ae225}
+      \strng{fullhashraw}{c3cf5c210dd292a6d9d9eab9385ae225}
+      \strng{bibnamehash}{c3cf5c210dd292a6d9d9eab9385ae225}
+      \strng{authorbibnamehash}{c3cf5c210dd292a6d9d9eab9385ae225}
+      \strng{authornamehash}{c3cf5c210dd292a6d9d9eab9385ae225}
+      \strng{authorfullhash}{c3cf5c210dd292a6d9d9eab9385ae225}
+      \strng{authorfullhashraw}{c3cf5c210dd292a6d9d9eab9385ae225}
+      \field{sortinit}{A}
+      \field{sortinithash}{2f401846e2029bad6b3ecc16d50031e2}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{Journal of Cloud Computing: Advances, Systems and Applications}
+      \field{number}{17}
+      \field{title}{Contextualization: dynamic configuration of virtual machines}
+      \field{volume}{4}
+      \field{year}{2015}
+    \endentry
+    \entry{hariri2018}{inproceedings}{}{}
+      \name{author}{2}{}{%
+        {{hash=210f88d202d600556bf36168b184996f}{%
+           family={Hariri},
+           familyi={H\bibinitperiod},
+           given={S.},
+           giveni={S\bibinitperiod}}}%
+        {{hash=63ef04bcd89da22f77f874b516d79502}{%
+           family={Carrasco\bibnamedelima Kind},
+           familyi={C\bibinitperiod\bibinitdelim K\bibinitperiod},
+           given={M.},
+           giveni={M\bibinitperiod}}}%
+      }
+      \strng{namehash}{642db87cb252252fc55af2f9faf76af9}
+      \strng{fullhash}{642db87cb252252fc55af2f9faf76af9}
+      \strng{fullhashraw}{642db87cb252252fc55af2f9faf76af9}
+      \strng{bibnamehash}{642db87cb252252fc55af2f9faf76af9}
+      \strng{authorbibnamehash}{642db87cb252252fc55af2f9faf76af9}
+      \strng{authornamehash}{642db87cb252252fc55af2f9faf76af9}
+      \strng{authorfullhash}{642db87cb252252fc55af2f9faf76af9}
+      \strng{authorfullhashraw}{642db87cb252252fc55af2f9faf76af9}
+      \field{sortinit}{H}
+      \field{sortinithash}{23a3aa7c24e56cfa16945d55545109b5}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{booktitle}{Proceedings of the 8th International Workshop on Cloud Data and Platforms (ScienceCloud '18)}
+      \field{title}{Batch and online anomaly detection for scientific applications in a {Kubernetes} environment}
+      \field{year}{2018}
+    \endentry
+    \entry{qian2020orchestrating}{article}{}{}
+      \true{moreauthor}
+      \true{morelabelname}
+      \name{author}{10}{}{%
+        {{hash=da11002068a7cdd63341516db248f202}{%
+           family={Qian},
+           familyi={Q\bibinitperiod},
+           given={Bin},
+           giveni={B\bibinitperiod}}}%
+        {{hash=4886e43485a285e5f617ac9289030412}{%
+           family={Su},
+           familyi={S\bibinitperiod},
+           given={Jie},
+           giveni={J\bibinitperiod}}}%
+        {{hash=7e378ad14a742e22db19bcbc1dd93c6c}{%
+           family={Wen},
+           familyi={W\bibinitperiod},
+           given={Zhenyu},
+           giveni={Z\bibinitperiod}}}%
+        {{hash=1c2141c2c74326502e620be210accd8a}{%
+           family={Jha},
+           familyi={J\bibinitperiod},
+           given={Devki\bibnamedelima Nandan},
+           giveni={D\bibinitperiod\bibinitdelim N\bibinitperiod}}}%
+        {{hash=db4f2174d3cbb798edca8546063cea48}{%
+           family={Li},
+           familyi={L\bibinitperiod},
+           given={Yinhao},
+           giveni={Y\bibinitperiod}}}%
+        {{hash=6eab0f4dd614fc93c2cdc02f6485526a}{%
+           family={Guan},
+           familyi={G\bibinitperiod},
+           given={Yu},
+           giveni={Y\bibinitperiod}}}%
+        {{hash=364332795ff6c09143cf7d6286b8627f}{%
+           family={Puthal},
+           familyi={P\bibinitperiod},
+           given={Deepak},
+           giveni={D\bibinitperiod}}}%
+        {{hash=97baaf613cfa6278f391e878be76f1fe}{%
+           family={James},
+           familyi={J\bibinitperiod},
+           given={Philip},
+           giveni={P\bibinitperiod}}}%
+        {{hash=bd1a7f88ec7d4f6f29d6096e8253f801}{%
+           family={Yang},
+           familyi={Y\bibinitperiod},
+           given={Renyu},
+           giveni={R\bibinitperiod}}}%
+        {{hash=d913b7de1daa87c8658ba2dcad408248}{%
+           family={Zomaya},
+           familyi={Z\bibinitperiod},
+           given={Albert\bibnamedelima Y.},
+           giveni={A\bibinitperiod\bibinitdelim Y\bibinitperiod}}}%
+      }
+      \strng{namehash}{5eed2e889f30b00e97a2dc7e819d0141}
+      \strng{fullhash}{37fec8740841b24971676161902f91cc}
+      \strng{fullhashraw}{37fec8740841b24971676161902f91cc}
+      \strng{bibnamehash}{5eed2e889f30b00e97a2dc7e819d0141}
+      \strng{authorbibnamehash}{5eed2e889f30b00e97a2dc7e819d0141}
+      \strng{authornamehash}{5eed2e889f30b00e97a2dc7e819d0141}
+      \strng{authorfullhash}{37fec8740841b24971676161902f91cc}
+      \strng{authorfullhashraw}{37fec8740841b24971676161902f91cc}
+      \field{sortinit}{Q}
+      \field{sortinithash}{ce69a400a872ddd02ee7fdb3b38c6abd}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{ACM Computing Surveys}
+      \field{number}{1}
+      \field{title}{Orchestrating the Development Lifecycle of Machine Learning-based {IoT} Applications: A Taxonomy and Survey}
+      \field{volume}{54}
+      \field{year}{2020}
+      \field{pages}{1\bibrangedash 48}
+      \range{pages}{48}
+    \endentry
+    \entry{verbraeken2020survey}{article}{}{}
+      \name{author}{6}{}{%
+        {{hash=aa4390d5ec869f54540c630d3a2fb1c9}{%
+           family={Verbraeken},
+           familyi={V\bibinitperiod},
+           given={Joost},
+           giveni={J\bibinitperiod}}}%
+        {{hash=ace123cad1079ccd98e2ceb937e2438e}{%
+           family={Wolting},
+           familyi={W\bibinitperiod},
+           given={Matthijs},
+           giveni={M\bibinitperiod}}}%
+        {{hash=75def5e23c69eefca9b3cee7db477f9c}{%
+           family={Katzy},
+           familyi={K\bibinitperiod},
+           given={Jonathan},
+           giveni={J\bibinitperiod}}}%
+        {{hash=757607c335d5a6d6a93ea88f898cf8f7}{%
+           family={Kloppenburg},
+           familyi={K\bibinitperiod},
+           given={Jeroen},
+           giveni={J\bibinitperiod}}}%
+        {{hash=7ae0249027282ce63a8b130db60b88f6}{%
+           family={Verbelen},
+           familyi={V\bibinitperiod},
+           given={Tim},
+           giveni={T\bibinitperiod}}}%
+        {{hash=92f9eb98f60d9bf92a68038489ee8719}{%
+           family={Rellermeyer},
+           familyi={R\bibinitperiod},
+           given={Jan\bibnamedelima S.},
+           giveni={J\bibinitperiod\bibinitdelim S\bibinitperiod}}}%
+      }
+      \strng{namehash}{a10d54bfc475a7c5e8468aae070fc030}
+      \strng{fullhash}{c8b74ecb8541ad06d96e86aad26fbcea}
+      \strng{fullhashraw}{c8b74ecb8541ad06d96e86aad26fbcea}
+      \strng{bibnamehash}{a10d54bfc475a7c5e8468aae070fc030}
+      \strng{authorbibnamehash}{a10d54bfc475a7c5e8468aae070fc030}
+      \strng{authornamehash}{a10d54bfc475a7c5e8468aae070fc030}
+      \strng{authorfullhash}{c8b74ecb8541ad06d96e86aad26fbcea}
+      \strng{authorfullhashraw}{c8b74ecb8541ad06d96e86aad26fbcea}
+      \field{sortinit}{V}
+      \field{sortinithash}{afb52128e5b4dc4b843768c0113d673b}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{ACM Computing Surveys}
+      \field{number}{2}
+      \field{title}{A Survey on Distributed Machine Learning}
+      \field{volume}{53}
+      \field{year}{2020}
+      \field{pages}{1\bibrangedash 33}
+      \range{pages}{33}
+    \endentry
+  \enddatalist
+\endrefsection
+\endinput
+

@@ -3,5 +3,3 @@
 We built a distributed ML pipeline to predict GitHub stargazers from 11 repository features collected for 2{,}000 repositories. Among the three models we tested, the Neural Network achieved the best accuracy ($R^2=0.8489$, MAE=10{,}449 stars), well ahead of Linear Regression ($R^2=0.4011$) and SVR ($R^2=0.8290$). Log-transforming the target was essential for stable training due to the highly skewed star distribution.
 
 On the infrastructure side, we used Ansible for automated VM provisioning~\cite{armstrong2015}, Git Hooks for CI/CD model deployment~\cite{qian2020orchestrating}, and Docker with Celery workers for scalable batch inference~\cite{hariri2018}. Horizontal scaling with RabbitMQ achieved 1.91\texttimes speedup at 2 worker VMs (95.5\% efficiency), confirming the architecture scales well for production workloads.
-
-Future work could explore ensemble methods combining all three models, richer features such as commit frequency and contributor diversity, or temporal models that capture how stars accumulate over a repository's lifetime.
