@@ -76,4 +76,4 @@ We tested throughput with 8 concurrent prediction tasks across 1, 2, and 3 worke
   \label{fig:scalability}
 \end{figure}
 
-At 2 VMs we achieved 1.91\texttimes speedup (95.5\% efficiency), and at 3 VMs 2.60\texttimes (86.7\% efficiency). The small drop from ideal scaling is due to RabbitMQ broker overhead and inter-VM communication latency~\cite{verbraeken2020survey}. Celery's work-stealing queue distributes tasks evenly, and adding replicas via \texttt{docker compose up -d --scale worker\_1=N} requires no code changes, making the system easy to scale in production~\cite{hariri2018}.
+At 2 VMs we achieved 1.91\texttimes speedup (95.5\% efficiency), and at 3 VMs 2.60\texttimes (86.7\% efficiency). The small drop from ideal scaling is due to RabbitMQ broker overhead and inter-VM communication latency~\cite{verbraeken2020survey}. Celery's work-stealing queue distributes tasks evenly, and adding replicas via \texttt{\texttt{docker compose up -d -{}-scale worker\_1=N}} requires no code changes, making the system easy to scale in production~\cite{hariri2018}.

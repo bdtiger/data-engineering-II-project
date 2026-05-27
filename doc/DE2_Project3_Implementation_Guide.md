@@ -253,10 +253,22 @@ The post-receive hook fires automatically after the push, copies the model files
 
 ---
 
+## Phase 5 — Test the Production Application
+
+### 5.1 Check Containers Status
+
+```bash
+# On Prod VM
+cd /data-engineering-II-project/ci_cd/production_server/
+docker compose ps
+# Should show: web, rabbit, and worker_1 all Up
+```
+
 ### 5.2 Access the Flask Web Interface
 
 Open browser and navigate to:
-```
+
+```text
 http://<PROD_IP>:5100/
 ```
 
@@ -289,7 +301,6 @@ result = get_accuracy.delay()
 mae = result.get(timeout=30)
 print(f"Model MAE (log-space): {mae:.4f}")
 ```
-
 ---
 
 ## Phase 6 — Scalability Testing
