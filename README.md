@@ -276,42 +276,6 @@ Horizontal scalability testing was conducted with 8 concurrent training tasks ac
         └────────────────────┘
 ```
 
-### Benchmark Instructions
-
-```bash
-# Scale to different worker counts
-docker compose up -d --scale worker_1=1  # Single worker baseline
-docker compose up -d --scale worker_1=2  # Two workers
-docker compose up -d --scale worker_1=3  # Three workers
-
-# Load test script
-python3 << 'EOF'
-from workerA import get_predictions
-import time
-
-# Submit 8 tasks concurrently
-task_ids = []
-start = time.time()
-for i in range(8):
-    task_ids.append(get_predictions.delay())
-    print(f"Submitted task {i+1}")
-
-submit_time = time.time() - start
-print(f"\nSubmitted 8 tasks in {submit_time:.2f}s")
-
-# Wait for all tasks to complete
-results = []
-for i, task_id in enumerate(task_ids):
-    result = task_id.get(timeout=60)
-    results.append(result)
-    print(f"Task {i+1} completed")
-
-total_time = time.time() - start
-print(f"\nTotal execution time: {total_time:.2f}s")
-print(f"Average task time: {total_time / len(task_ids):.2f}s")
-EOF
-```
-
 ### Visualization
 
 The complete scaling analysis including wall-clock time and speedup curves is available in:  
