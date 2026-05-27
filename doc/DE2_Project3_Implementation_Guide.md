@@ -9,7 +9,7 @@
 ## Project Overview
 
 This project implements a **distributed machine learning pipeline** for GitHub repository star count prediction using TensorFlow/Keras. It demonstrates:
-- **Data collection** via GitHub API crawler (2000+ repositories)
+- **Data collection** via GitHub API crawler (2000 repositories)
 - **Model training** with TensorFlow/Keras neural networks (regression task)
 - **Production serving** with Flask REST API + Celery asynchronous workers
 - **Cloud infrastructure** deployment on OpenStack with Ansible automation
@@ -24,9 +24,10 @@ This project implements a **distributed machine learning pipeline** for GitHub r
 │  OpenStack Cloud (SSC/SNIC)                                          │
 │                                                                      │
 │  ┌─────────────────┐   Ansible provision    ┌──────────────────────┐ │
-│  │  Client VM      │ ──────────────────────►│  Dev VM              │ │
+│  │  Client VM/     |                        |                      | |
+   |  Control Node   │ ──────────────────────►│  Dev VM              │ │
 │  │                 │                        │  · GitHub crawler    │ │
-│  │  start_         │ ──────────────────────►│  · neural_net.py     │ │
+│  │  start_         │ ──────────────────────►│  · neural_network.py │ │
 │  │  instances.py   │   Ansible provision    │  · model training    │ │
 │  │  Ansible ctrl   │                        │  · bare git repo     │ │
 │  └─────────────────┘                        └──────────┬───────────┘ │
@@ -43,12 +44,13 @@ This project implements a **distributed machine learning pipeline** for GitHub r
 │                                                                      │
 └──────────────────────────────────────────────────────────────────────┘
 ```
+The Client VM acts as the control node for OpenStack provisioning and Ansible orchestration; the deployed prediction system itself runs on the Dev VM and Prod VM.
 
 ### End-to-end Flow
 1. **Infrastructure Setup**: Client VM runs `start_dev_prod_instances.py` → Dev and Prod VMs provisioned on OpenStack
 2. **Configuration**: Client VM runs Ansible playbook → installs Python packages on Dev, Docker/RabbitMQ on Prod
 3. **Data Collection**: Dev VM runs `github_crawler.py` → fetches top repos from GitHub API → saves features to CSV
-4. **Model Training**: Dev VM runs `neural_net.py` → trains TensorFlow model on dataset → saves model files
+4. **Model Training**: Dev VM runs `neural_network.py` → trains TensorFlow model on dataset → saves model files
 5. **Deployment**: Dev VM pushes to deployment branch → Git hook triggered → model copied to Prod → Celery workers restart
 6. **Production Serving**: Flask API receives requests → Celery tasks executed → model predictions returned with accuracy metrics
 
@@ -334,7 +336,7 @@ http://<PROD_IP>:5100/
 Available endpoints:
 - `GET /` - Home page with endpoint descriptions
 - `GET /accuracy` - Form to trigger accuracy evaluation
-- `POST /accuracy` - Evaluate model on test data, returns Mean Absolute Error (MAE)
+- `POST /accuracy` - Evaluate the deployed model and return Mean Absolute Error (MAE)
 - `GET /predictions` - Form to trigger batch predictions
 - `POST /predictions` - Run batch inference on all repositories, displays predicted vs actual star counts with accuracy metric
 
@@ -386,7 +388,7 @@ docker compose up -d --scale worker_1=1
 
 ### 6.2 Test Results
 
-The horizontal scalability tests were conducted with 8 concurrent training tasks across different numbers of worker VMs. Results show:
+The horizontal scalability tests were conducted with 8 concurrent prediction tasks across different numbers of worker VMs. Results show:
 
 | Number of VMs | Total Time (seconds) | Speedup | Efficiency |
 |---|---|---|---|
@@ -403,7 +405,7 @@ The horizontal scalability tests were conducted with 8 concurrent training tasks
   - Network communication latency between workers and broker
   - Task queue serialization/deserialization costs
 
-**Visual Representation:** See `project-report/figures/Graph.webp` for wall-clock time comparison and speedup curves.
+**Visual Representation:** See `project-report/figures/Graph.jpg` for wall-clock time comparison and speedup curves.
 
 ### 6.3 Benchmark Script
 
@@ -416,7 +418,7 @@ import time
 
 task_ids = []
 start = time.time()
-for i in range(10):
+for i in range(8):
     task_ids.append(get_predictions.delay())
 elapsed = time.time() - start
 print(f"Submitted 10 tasks in {elapsed:.2f}s")

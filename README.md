@@ -5,7 +5,7 @@ A production-grade distributed machine learning system demonstrating end-to-end 
 ## 🎯 Project Overview
 
 This project implements a **distributed GitHub repository star count prediction pipeline** that:
-- Collects GitHub repository features from 2000+ repositories via GitHub API
+- Collects GitHub repository features from 2000 repositories via GitHub API
 - Trains a neural network using TensorFlow/Keras for regression
 - Deploys the model as a production REST API with async workers
 - Uses Celery + RabbitMQ for distributed task processing
@@ -15,7 +15,7 @@ This project implements a **distributed GitHub repository star count prediction 
 
 ```
 ┌─────────────────────┐         ┌──────────────────┐         ┌──────────────────┐
-│    Client VM        │         │      Dev VM      │         │     Prod VM      │
+│    Client VM / Control Node       │         │      Dev VM      │         │     Prod VM      │
 │                     │         │                  │         │   (Docker)       │
 │  Provisioning &     │ ──────►│ Data Collection  │ ──────►│  Flask API       │
 │  Orchestration      │         │ Model Training   │         │  Celery Workers  │
@@ -23,6 +23,7 @@ This project implements a **distributed GitHub repository star count prediction 
 └─────────────────────┘         └──────────────────┘         └──────────────────┘
       (Ansible)                  (TensorFlow)              (Docker Compose)
 ```
+The Client VM acts as the control node for OpenStack provisioning and Ansible orchestration; the deployed prediction system itself runs on the Dev VM and Prod VM.
 
 ## 📋 Tech Stack
 
@@ -230,12 +231,12 @@ Task executor (configurable instances)
 | Method | Endpoint | Description |
 |--------|----------|-------------|
 | GET | `/` | Welcome page |
-| POST | `/accuracy` | Get model accuracy on test data |
+| POST | `/accuracy` | Get model MAE on the deployed dataset |
 | POST | `/predictions` | Get model predictions with visualization |
 
 ## 📈 Scalability Testing
 
-Horizontal scalability testing was conducted with 8 concurrent training tasks across 1, 2, and 3 worker VMs. The results demonstrate the system's ability to scale efficiently with additional computational resources.
+Horizontal scalability testing was conducted with 8 concurrent prediction tasks across 1, 2, and 3 worker VMs. The results demonstrate the system's ability to scale efficiently with additional computational resources.
 
 ### Performance Results
 
@@ -279,10 +280,10 @@ Horizontal scalability testing was conducted with 8 concurrent training tasks ac
 ### Visualization
 
 The complete scaling analysis including wall-clock time and speedup curves is available in:  
-📊 **`project-report/figures/Graph.webp`**
+📊 **`project-report/figures/Graph.jpg`**
 
 This graph displays:
-- **Left Chart**: Wall-clock time for 8 training tasks across 1-3 VMs (182s → 95s → 70s)
+- **Left Chart**: Wall-clock time for 8 prediction tasks across 1-3 VMs (182s → 95s → 70s)
 - **Right Chart**: Speedup comparison between ideal linear scaling and measured speedup (1.91x at 2 VMs, 2.60x at 3 VMs)
 
 ## 🔧 Celery Task Examples
@@ -355,7 +356,7 @@ ansible-playbook -i openstack-client/inventory.ini openstack-client/ansible_conf
 
 # 3. Train model on Dev VM
 python3 crawler/github_crawler.py
-python3 ci_cd/development_server/neural_net.py
+python3 ci_cd/development_server/neural_network.py
 
 # 4. Deploy via Git Hook (automatic SCP + worker restart)
 git push deployment main
