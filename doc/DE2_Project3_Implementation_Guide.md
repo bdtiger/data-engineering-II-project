@@ -9,7 +9,7 @@
 ## Project Overview
 
 This project implements a **distributed machine learning pipeline** for GitHub repository star count prediction using TensorFlow/Keras. It demonstrates:
-- **Data collection** via GitHub API crawler (2000 repositories)
+- **Data collection** via GitHub API crawler (2,000 repositories)
 - **Model training** with TensorFlow/Keras neural networks (regression task)
 - **Production serving** with Flask REST API + Celery asynchronous workers
 - **Cloud infrastructure** deployment on OpenStack with Ansible automation
@@ -20,29 +20,28 @@ This project implements a **distributed machine learning pipeline** for GitHub r
 ## Architecture Overview
 
 ```
-┌──────────────────────────────────────────────────────────────────────┐
-│  OpenStack Cloud (SSC/SNIC)                                          │
-│                                                                      │
-│  ┌─────────────────┐   Ansible provision    ┌──────────────────────┐ │
-│  │  Client VM/     |                        |                      | |
-   |  Control Node   │ ──────────────────────►│  Dev VM              │ │
-│  │                 │                        │  · GitHub crawler    │ │
-│  │  start_         │ ──────────────────────►│  · neural_network.py │ │
-│  │  instances.py   │   Ansible provision    │  · model training    │ │
-│  │  Ansible ctrl   │                        │  · bare git repo     │ │
-│  └─────────────────┘                        └──────────┬───────────┘ │
-│                                                        │ git push    │
-│                                                        │ (deploy)    │
-│                                                        ▼             │
-│                                             ┌──────────────────────┐ │
-│                                             │  Prod VM (Docker)    │ │
-│                                             │  · Flask web app     │ │
-│                                             │  · Celery workers    │ │
-│                                             │  · RabbitMQ broker   │ │
-│                                             │  · TensorFlow model  │ │
-│                                             └──────────────────────┘ │
-│                                                                      │
-└──────────────────────────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────────────────────────────────┐
+│                        OpenStack Cloud (SSC/SNIC)                            │
+│                                                                              │
+│  ┌──────────────────────┐    Ansible provision      ┌──────────────────────┐ │
+│  │ Client VM /          │ ────────────────────────► │ Dev VM               │ │
+│  │ Control Node         │                           │ · GitHub crawler     │ │
+│  │                      │    Ansible provision      │ · neural_network.py  │ │
+│  │ · start_instances.py │ ────────────────────────► │ · model training     │ │
+│  │ · Ansible control    │                           │ · model artifacts    │ │
+│  └──────────────────────┘                           └──────────┬───────────┘ │
+│                                                                │ git push    │
+│                                                                │ Git Hook    │
+│                                                                ▼             │
+│                                                     ┌──────────────────────┐ │
+│                                                     │ Prod VM (Docker)     │ │
+│                                                     │ · Flask web app      │ │
+│                                                     │ · Celery workers     │ │
+│                                                     │ · RabbitMQ broker    │ │
+│                                                     │ · TensorFlow model   │ │
+│                                                     └──────────────────────┘ │
+│                                                                              │
+└──────────────────────────────────────────────────────────────────────────────┘
 ```
 The Client VM acts as the control node for OpenStack provisioning and Ansible orchestration; the deployed prediction system itself runs on the Dev VM and Prod VM.
 
@@ -184,7 +183,7 @@ python3 crawler/github_crawler.py
 
 This script:
 - Searches for repositories with ≥50 stars
-- Collects up to 2000 repositories, sorted by stars (descending)
+- Collects up to 2,000 repositories, sorted by stars (descending)
 - Extracts 15 features per repo: full_name, stargazers_count, forks_count, subscribers_count, open_issues_count, size, network_count, language, has_wiki, has_pages, has_issues, topics_count, age_days, created_at, pushed_at
 - Applies rate-limit handling (2-second delay between pages)
 - Saves to `crawler/repos.csv`
@@ -226,105 +225,33 @@ This script:
 
 ## Phase 4 — Deploy Model to Production via Git Hook
 
-Deployment is automated through a Git post-receive hook. When you push the trained model to the deployment branch, the hook automatically copies the model to Prod and restarts Celery workers.
+Deployment is automated through a Git post-receive hook. In this project, SSH authorization and Git Hook configuration are handled by the Ansible playbook. After the model is trained on the Dev VM, deployment is triggered by pushing the trained model files to the deployment remote. The Git Hook then transfers the model files to the Prod VM and restarts the Celery worker automatically.
 
-### 4.1 Set Up Git Hook Deployment
+### 4.1 Add Deployment Remote
 
-First, authorize Dev's SSH key on Prod:
-
-```bash
-# On Dev VM — get the public key
-cat /home/appuser/.ssh/id_rsa.pub
-```
-
-Copy that output, then on Prod VM:
+On the Dev VM, go to the project directory and add the deployment remote:
 
 ```bash
-# On Prod VM
-echo "<paste key here>" >> /home/appuser/.ssh/authorized_keys
-chmod 600 /home/appuser/.ssh/authorized_keys
-```
-
-Verify Dev-to-Prod SSH works:
-
-```bash
-# On Dev VM
-ssh -i /home/appuser/.ssh/id_rsa \
-    -o StrictHostKeyChecking=no \
-    appuser@<PROD_IP> "echo SSH OK"
-```
-
-### 4.2 Create the Post-Receive Hook
-
-On Dev VM, create the post-receive hook:
-
-```bash
-# On Dev VM
-cat > /opt/model_repo.git/hooks/post-receive << 'HOOK'
-#!/bin/bash
-PROD_IP="<PROD_IP>"   # Replace with actual Prod IP
-MODEL_WEIGHTS_SRC="/data-engineering-II-project/ci_cd/development_server/model.weights.h5"
-MODEL_JSON_SRC="/data-engineering-II-project/ci_cd/development_server/model.json"
-MODEL_WEIGHTS_DEST="/data-engineering-II-project/ci_cd/production_server/model.weights.h5"
-MODEL_JSON_DEST="/data-engineering-II-project/ci_cd/production_server/model.json"
-
-echo "==> Deploying model weights to Prod..."
-scp -i /home/appuser/.ssh/id_rsa \
-    -o StrictHostKeyChecking=no \
-    $MODEL_WEIGHTS_SRC appuser@${PROD_IP}:${MODEL_WEIGHTS_DEST}
-
-echo "==> Deploying model JSON to Prod..."
-scp -i /home/appuser/.ssh/id_rsa \
-    -o StrictHostKeyChecking=no \
-    $MODEL_JSON_SRC appuser@${PROD_IP}:${MODEL_JSON_DEST}
-
-echo "==> Restarting Celery worker on Prod..."
-ssh -i /home/appuser/.ssh/id_rsa \
-    -o StrictHostKeyChecking=no \
-    appuser@${PROD_IP} \
-    "cd /data-engineering-II-project/ci_cd/production_server && docker compose restart worker_1"
-
-echo "==> Deploy done."
-HOOK
-
-chmod +x /opt/model_repo.git/hooks/post-receive
-```
-
-### 4.3 Add Deployment Remote and Deploy
-
-Set up the deployment remote on Dev VM:
-
-```bash
-# On Dev VM
 cd /data-engineering-II-project
 git remote get-url deployment 2>/dev/null || \
 git remote add deployment /opt/model_repo.git
 ```
 
-After training completes, commit and push the model:
+### 4.2 Deploy the Trained Model
+
+After training completes, commit and push the model files:
 
 ```bash
-# On Dev VM
 cd /data-engineering-II-project
 git add ci_cd/development_server/model.weights.h5 \
         ci_cd/development_server/model.json
 git commit -m "deploy: trained neural network model"
 git push deployment main
-# The post-receive hook fires automatically → model weights and JSON copied to Prod → workers restart
 ```
+
+The post-receive hook fires automatically after the push, copies the model files to the Prod VM, and restarts the Celery worker.
 
 ---
-
-## Phase 5 — Test the Production Application
-
-### 5.1 Check Containers Status
-
-```bash
-# On Prod VM
-cd /data-engineering-II-project/ci_cd/production_server/
-docker compose ps
-# Should show: web, rabbit, and worker_1 all Up
-```
 
 ### 5.2 Access the Flask Web Interface
 
@@ -421,7 +348,7 @@ start = time.time()
 for i in range(8):
     task_ids.append(get_predictions.delay())
 elapsed = time.time() - start
-print(f"Submitted 10 tasks in {elapsed:.2f}s")
+print(f"Submitted 8 tasks in {elapsed:.2f}s")
 
 # Wait for completion and measure total time
 import time
@@ -448,7 +375,7 @@ for task_id in task_ids:
 ```
 data-engineering-II-project/
 ├── crawler/
-│   ├── github_crawler.py           # GitHub API crawler - fetches 2000+ repos by stars
+│   ├── github_crawler.py           # GitHub API crawler - fetches 2,000 repos by stars
 │   └── repos.csv                   # Output: 15 features per repository
 │
 ├── ci_cd/
@@ -458,7 +385,7 @@ data-engineering-II-project/
 │   │   ├── linear_regression.py   # Baseline linear regression model
 │   │   ├── analyze_models.py      # Model comparison and analysis script
 │   │   ├── utils.py               # Utility functions for training
-│   │   ├── github-repository-data.csv  # Input dataset (2000+ repos)
+│   │   ├── github-repository-data.csv  # Input dataset (2,000 repos)
 │   │   ├── model.weights.h5       # Trained model weights
 │   │   ├── model.json             # Model architecture (TF/Keras JSON format)
 │   │   ├── scalability_results.csv # Training timing metrics
@@ -473,7 +400,7 @@ data-engineering-II-project/
 │       ├── run_task.py            # Utility for running tasks
 │       ├── model.weights.h5       # Model weights (production copy)
 │       ├── model.json             # Model architecture (production copy)
-│       ├── github-repository-data.csv  # Test dataset
+│       ├── github-repository-data.csv  # Deployed dataset for production inference/evaluation
 │       ├── static/                # Static files (Chart.min.js for visualizations)
 │       └── templates/             # HTML templates (base.html, index.html, accuracy.html, predictions.html, result.html, chart.html, bar_chart.html)
 │

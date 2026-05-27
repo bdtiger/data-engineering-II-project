@@ -5,7 +5,7 @@ A production-grade distributed machine learning system demonstrating end-to-end 
 ## 🎯 Project Overview
 
 This project implements a **distributed GitHub repository star count prediction pipeline** that:
-- Collects GitHub repository features from 2000 repositories via GitHub API
+- Collects GitHub repository features from 2,000 repositories via GitHub API
 - Trains a neural network using TensorFlow/Keras for regression
 - Deploys the model as a production REST API with async workers
 - Uses Celery + RabbitMQ for distributed task processing
@@ -15,13 +15,13 @@ This project implements a **distributed GitHub repository star count prediction 
 
 ```
 ┌─────────────────────┐         ┌──────────────────┐         ┌──────────────────┐
-│    Client VM / Control Node       │         │      Dev VM      │         │     Prod VM      │
-│                     │         │                  │         │   (Docker)       │
-│  Provisioning &     │ ──────►│ Data Collection  │ ──────►│  Flask API       │
-│  Orchestration      │         │ Model Training   │         │  Celery Workers  │
+│ Client VM /         │         │      Dev VM      │         │     Prod VM      │
+│ Control Node        │         │                  │         │   (Docker)       │
+│ Provisioning &      │ ──────► │ Data Collection  │ ──────► │  Flask API       │
+│ Orchestration       │         │ Model Training   │         │  Celery Workers  │
 │                     │         │                  │         │  RabbitMQ        │
 └─────────────────────┘         └──────────────────┘         └──────────────────┘
-      (Ansible)                  (TensorFlow)              (Docker Compose)
+      (Ansible)                     (TensorFlow)               (Docker Compose)
 ```
 The Client VM acts as the control node for OpenStack provisioning and Ansible orchestration; the deployed prediction system itself runs on the Dev VM and Prod VM.
 
@@ -175,7 +175,7 @@ curl -X POST http://<PROD_IP>:5100/accuracy
 
 ### Training Dataset
 - **Source**: GitHub API crawler (top repositories by stars)
-- **Samples**: 2000 repositories with ≥50 stars
+- **Samples**: 2,000 repositories with ≥50 stars
 - **Features**: 11 selected features (from 15 raw attributes)
 - **Target**: Regression on log-transformed star count
 
