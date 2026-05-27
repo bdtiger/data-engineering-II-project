@@ -14,7 +14,7 @@ import time
 import requests
 
 TOKEN = os.environ.get("GITHUB_TOKEN")
-TARGET = 1000
+TARGET = 2000
 MIN_STARS = 50
 OUTPUT = "repos.csv"
 

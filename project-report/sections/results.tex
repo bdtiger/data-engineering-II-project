@@ -1,6 +1,6 @@
 \section{Results}
 
-We evaluated three regression models on 2{,}000 GitHub repositories (80/20 train-test split) with log-transformed targets and 11 engineered features.
+We evaluated three models on 2{,}000 repositories (80/20 split) using log-transformed targets and 11 features.
 
 \subsection{Model Performance Comparison}
 
@@ -19,11 +19,11 @@ We evaluated three regression models on 2{,}000 GitHub repositories (80/20 train
   \label{tab:model-results}
 \end{table}
 
-The Neural Network achieved superior performance with $R^2=0.8489$ and RMSLE=0.6964, significantly outperforming Linear Regression ($R^2=0.4011$) and SVR ($R^2=0.8290$). The 108\% improvement in $R^2$ over Linear Regression demonstrates that deep learning hierarchical feature abstraction effectively captures non-linear repository relationships (e.g., synergy between fork count, subscriber base, and activity indicators). Training required 90 epochs in 25.43 seconds with final train loss 0.4493 and validation loss 0.3081, indicating early stopping (patience=10) prevented overfitting and achieved excellent generalization.
+The Neural Network performed best with $R^2=0.8489$, outperforming Linear Regression ($R^2=0.4011$) and SVR ($R^2=0.8290$). The large gap over the linear baseline shows that non-linear interactions between features (e.g., forks and age) are important for predicting popularity. Training took 90 epochs in 25.43 seconds; early stopping (patience=10) prevented overfitting, with a final validation loss of 0.3081.
 
 \subsection{Production Deployment and Inference}
 
-The Neural Network was deployed to production and tested on the full dataset. Production MAE (log-stars) is 0.4540, confirming test-set generalization. Sample predictions in Table~\ref{tab:predictions} show inference accuracy on top 10 most-starred repositories.
+We deployed the Neural Network to the Prod VM via Git Hook. The production MAE (log-stars) is 0.4540, which confirms that the model generalises well beyond the test set. Table~\ref{tab:predictions} shows sample predictions for the top 10 most-starred repositories.
 
 \begin{table}[h]
   \centering
@@ -48,11 +48,11 @@ The Neural Network was deployed to production and tested on the full dataset. Pr
   \label{tab:predictions}
 \end{table}
 
-Model inference completes within 50--100 milliseconds per request. Analysis of prediction errors reveals that highly-starred repositories exhibit larger absolute errors but similar relative accuracy (MAPE consistency), indicating the log-transformation effectively normalizes targets. Deployment via Git Hook CI/CD transfers model files to the Prod VM and restarts Docker containers automatically. This simplifies deployment, although a brief interruption may occur during container restart.
+Inference takes 50--100 ms per request. Highly-starred repositories tend to have larger absolute errors, but relative accuracy is consistent across the range, which confirms the log-transformation stabilises the target distribution.
 
 \subsection{Horizontal Scalability Analysis}
 
-Horizontal scalability testing evaluated system throughput across multiple worker VMs using 8 concurrent prediction tasks. As shown in Figure~\ref{fig:scalability} and Table~\ref{tab:scaling}, the system demonstrates near-linear scaling efficiency across distributed workers~\cite{amdahl1967, kepner2018}.
+We tested throughput with 8 concurrent prediction tasks across 1, 2, and 3 worker VMs. Results are shown in Figure~\ref{fig:scalability} and Table~\ref{tab:scaling}.
 
 \begin{table}[h]
   \centering
@@ -65,7 +65,7 @@ Horizontal scalability testing evaluated system throughput across multiple worke
     3 & 70.0 & 2.60\texttimes & 86.7\% \\
     \bottomrule
   \end{tabular}
-  \caption{Horizontal scalability: 8 concurrent prediction tasks on 1--3 worker VMs. Near-linear speedup (1.91\texttimes at 2 VMs) demonstrates effective load distribution via RabbitMQ message broker~\cite{merkel2014}.}
+  \caption{Horizontal scalability: 8 concurrent prediction tasks on 1--3 worker VMs. Near-linear speedup (1.91\texttimes at 2 VMs) demonstrates effective load distribution via RabbitMQ message broker~\cite{hariri2018}.}
   \label{tab:scaling}
 \end{table}
 
@@ -76,4 +76,4 @@ Horizontal scalability testing evaluated system throughput across multiple worke
   \label{fig:scalability}
 \end{figure}
 
-Key observations: (1) 2-VM configuration achieves 1.91\texttimes speedup, approaching the theoretical 2.0\texttimes ideal; (2) 3-VM configuration maintains 86.7\% efficiency despite increased broker communication; (3) Scaling remains effective up to 3 VMs on ssc.medium resources (2 vCPU, 4GB RAM). The slight efficiency loss at 3 VMs is expected due to message serialization, queue contention, and network latency between worker nodes. Celery's work-stealing queue distribution ensures balanced task allocation across workers~\cite{kepner2018}. Horizontal scaling via Docker Compose worker replicas (\texttt{docker compose --scale worker\_1=N}) enables linear throughput increases without modifying application code, validating the architecture's scalability properties for production workloads.
+At 2 VMs we achieved 1.91\texttimes speedup (95.5\% efficiency), and at 3 VMs 2.60\texttimes (86.7\% efficiency). The small drop from ideal scaling is due to RabbitMQ broker overhead and inter-VM communication latency~\cite{verbraeken2020survey}. Celery's work-stealing queue distributes tasks evenly, and adding replicas via \texttt{docker compose --scale worker\_1=N} requires no code changes, making the system easy to scale in production~\cite{hariri2018}.

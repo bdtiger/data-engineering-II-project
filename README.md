@@ -141,32 +141,13 @@ Set up automated deployment using Git hooks:
 
 ```bash
 # On Dev VM - authorize Prod SSH access
-cat /home/appuser/.ssh/id_rsa.pub
+# Authoriaztion was automated by ansible
 
 # On Prod VM - add Dev's public key
-echo "<Dev's public key>" >> /home/appuser/.ssh/authorized_keys
-chmod 600 /home/appuser/.ssh/authorized_keys
+# Devs public key was automated by ansible
 
 # On Dev VM - create post-receive hook
-cat > /opt/model_repo.git/hooks/post-receive << 'HOOK'
-#!/bin/bash
-PROD_IP="<PROD_IP>"
-scp -i /home/appuser/.ssh/id_rsa \
-    -o StrictHostKeyChecking=no \
-    /data-engineering-II-project/ci_cd/development_server/model.weights.h5 \
-    appuser@${PROD_IP}:/data-engineering-II-project/ci_cd/production_server/model.weights.h5
-
-scp -i /home/appuser/.ssh/id_rsa \
-    -o StrictHostKeyChecking=no \
-    /data-engineering-II-project/ci_cd/development_server/model.json \
-    appuser@${PROD_IP}:/data-engineering-II-project/ci_cd/production_server/model.json
-
-ssh -i /home/appuser/.ssh/id_rsa \
-    -o StrictHostKeyChecking=no \
-    appuser@${PROD_IP} \
-    "cd /data-engineering-II-project/ci_cd/production_server && docker compose restart worker_1"
-HOOK
-chmod +x /opt/model_repo.git/hooks/post-receive
+# Setting Git Hook has been automated by ansible
 
 # On Dev VM - add deployment remote
 cd /data-engineering-II-project
